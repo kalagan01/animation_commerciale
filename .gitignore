@@ -1,0 +1,19 @@
+# Java
+backend/target/
+*.class
+
+# Node
+frontend/node_modules/
+frontend/dist/
+
+# Vite
+frontend/.vite/
+
+# SQLite
+*.db
+*.db-journal
+
+# IDE
+.idea/
+.vscode/
+.DS_Store
