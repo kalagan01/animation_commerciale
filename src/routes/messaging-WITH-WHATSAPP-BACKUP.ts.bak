@@ -1,0 +1,760 @@
+// SMS & WhatsApp Business API
+// Communication transactionnelle automatique
+// Version: 1.0.0
+// Date: 14 février 2026
+
+import { Hono } from 'hono';
+import { cors } from 'hono/cors';
+
+type Bindings = {
+  SUPABASE_URL: string;
+  SUPABASE_ANON_KEY: string;
+  TWILIO_ACCOUNT_SID: string;
+  TWILIO_AUTH_TOKEN: string;
+  TWILIO_PHONE_NUMBER: string;
+  WHATSAPP_API_TOKEN: string;
+  WHATSAPP_PHONE_NUMBER_ID: string;
+};
+
+const app = new Hono<{ Bindings: Bindings }>();
+app.use('*', cors());
+
+// Types
+interface SMSMessage {
+  message_id: string;
+  recipient_phone: string;
+  recipient_id?: string;
+  message_body: string;
+  message_type: 'transactional' | 'marketing' | 'alert' | 'reminder';
+  template_id?: string;
+  variables?: Record<string, any>;
+  status: 'pending' | 'sent' | 'delivered' | 'failed' | 'rejected';
+  provider: 'twilio' | 'vonage' | 'sns' | 'whatsapp';
+  provider_message_id?: string;
+  sent_at?: string;
+  delivered_at?: string;
+  error_message?: string;
+  metadata?: any;
+}
+
+interface WhatsAppMessage {
+  message_id: string;
+  recipient_phone: string;
+  recipient_id?: string;
+  template_name: string;
+  template_language: string;
+  template_variables: Record<string, any>;
+  message_type: 'template' | 'text' | 'media';
+  media_url?: string;
+  status: 'pending' | 'sent' | 'delivered' | 'read' | 'failed';
+  whatsapp_message_id?: string;
+  sent_at?: string;
+  delivered_at?: string;
+  read_at?: string;
+  error_message?: string;
+  metadata?: any;
+}
+
+interface MessageTemplate {
+  template_id: string;
+  name: string;
+  channel: 'sms' | 'whatsapp' | 'both';
+  language: string;
+  content: string;
+  variables: string[]; // Liste des variables {{variable_name}}
+  whatsapp_template_name?: string; // Nom template approuvé WhatsApp
+  category: 'appointment' | 'reminder' | 'commission' | 'alert' | 'verification';
+  active: boolean;
+  approval_status?: 'pending' | 'approved' | 'rejected';
+}
+
+interface ConversationThread {
+  thread_id: string;
+  user_id: string;
+  phone_number: string;
+  channel: 'sms' | 'whatsapp';
+  status: 'active' | 'closed' | 'archived';
+  last_message_at?: string;
+  messages: ConversationMessage[];
+}
+
+interface ConversationMessage {
+  message_id: string;
+  thread_id: string;
+  direction: 'inbound' | 'outbound';
+  sender_phone?: string;
+  recipient_phone?: string;
+  content: string;
+  media_url?: string;
+  timestamp: string;
+  status: 'sent' | 'delivered' | 'read' | 'failed';
+}
+
+interface OptInStatus {
+  user_id: string;
+  phone_number: string;
+  sms_opt_in: boolean;
+  whatsapp_opt_in: boolean;
+  marketing_opt_in: boolean;
+  opted_in_at?: string;
+  opted_out_at?: string;
+  opt_out_reason?: string;
+}
+
+// ==================== ENDPOINTS ====================
+
+/**
+ * POST /api/messaging/sms/send
+ * Envoie un SMS via Twilio
+ */
+app.post('/api/messaging/sms/send', async (c) => {
+  try {
+    const request = await c.req.json();
+    const { recipient_phone, message_body, recipient_id, message_type, template_id, variables } = request;
+    
+    if (!recipient_phone || !message_body) {
+      return c.json({ error: 'Missing required fields' }, 400);
+    }
+    
+    // Vérifier opt-in
+    const optIn = await checkOptInStatus(recipient_phone, 'sms', c.env);
+    if (!optIn) {
+      return c.json({ error: 'Recipient has opted out of SMS' }, 403);
+    }
+    
+    // Envoyer SMS via Twilio
+    const twilioUrl = `https://api.twilio.com/2010-04-01/Accounts/${c.env.TWILIO_ACCOUNT_SID}/Messages.json`;
+    const auth = btoa(`${c.env.TWILIO_ACCOUNT_SID}:${c.env.TWILIO_AUTH_TOKEN}`);
+    
+    const formData = new URLSearchParams();
+    formData.append('To', recipient_phone);
+    formData.append('From', c.env.TWILIO_PHONE_NUMBER);
+    formData.append('Body', message_body);
+    
+    const twilioResponse = await fetch(twilioUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData.toString(),
+    });
+    
+    const twilioData = await twilioResponse.json();
+    
+    // Créer enregistrement message
+    const message: SMSMessage = {
+      message_id: crypto.randomUUID(),
+      recipient_phone,
+      recipient_id,
+      message_body,
+      message_type: message_type || 'transactional',
+      template_id,
+      variables,
+      status: twilioData.status === 'queued' || twilioData.status === 'sent' ? 'sent' : 'failed',
+      provider: 'twilio',
+      provider_message_id: twilioData.sid,
+      sent_at: twilioData.date_created,
+      error_message: twilioData.error_message,
+      metadata: { twilio_status: twilioData.status },
+    };
+    
+    // Sauvegarder dans Supabase
+    await saveMessage(message, 'sms', c.env);
+    
+    return c.json({
+      success: true,
+      message_id: message.message_id,
+      provider_message_id: twilioData.sid,
+      status: message.status,
+    });
+    
+  } catch (error: any) {
+    console.error('SMS send error:', error);
+    return c.json({ error: 'Internal server error', details: error.message }, 500);
+  }
+});
+
+/**
+ * POST /api/messaging/whatsapp/send
+ * Envoie un message WhatsApp Business
+ */
+app.post('/api/messaging/whatsapp/send', async (c) => {
+  try {
+    const request = await c.req.json();
+    const {
+      recipient_phone,
+      template_name,
+      template_language,
+      template_variables,
+      recipient_id,
+    } = request;
+    
+    if (!recipient_phone || !template_name || !template_language) {
+      return c.json({ error: 'Missing required fields' }, 400);
+    }
+    
+    // Vérifier opt-in
+    const optIn = await checkOptInStatus(recipient_phone, 'whatsapp', c.env);
+    if (!optIn) {
+      return c.json({ error: 'Recipient has opted out of WhatsApp' }, 403);
+    }
+    
+    // Envoyer via WhatsApp Business API
+    const whatsappUrl = `https://graph.facebook.com/v18.0/${c.env.WHATSAPP_PHONE_NUMBER_ID}/messages`;
+    
+    const payload = {
+      messaging_product: 'whatsapp',
+      to: recipient_phone,
+      type: 'template',
+      template: {
+        name: template_name,
+        language: {
+          code: template_language,
+        },
+        components: template_variables ? [
+          {
+            type: 'body',
+            parameters: Object.values(template_variables).map(value => ({
+              type: 'text',
+              text: String(value),
+            })),
+          },
+        ] : [],
+      },
+    };
+    
+    const whatsappResponse = await fetch(whatsappUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${c.env.WHATSAPP_API_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+    
+    const whatsappData = await whatsappResponse.json();
+    
+    // Créer enregistrement message
+    const message: WhatsAppMessage = {
+      message_id: crypto.randomUUID(),
+      recipient_phone,
+      recipient_id,
+      template_name,
+      template_language,
+      template_variables: template_variables || {},
+      message_type: 'template',
+      status: whatsappData.messages?.[0]?.id ? 'sent' : 'failed',
+      whatsapp_message_id: whatsappData.messages?.[0]?.id,
+      sent_at: new Date().toISOString(),
+      error_message: whatsappData.error?.message,
+      metadata: whatsappData,
+    };
+    
+    // Sauvegarder
+    await saveMessage(message, 'whatsapp', c.env);
+    
+    return c.json({
+      success: true,
+      message_id: message.message_id,
+      whatsapp_message_id: message.whatsapp_message_id,
+      status: message.status,
+    });
+    
+  } catch (error: any) {
+    console.error('WhatsApp send error:', error);
+    return c.json({ error: 'Internal server error', details: error.message }, 500);
+  }
+});
+
+/**
+ * POST /api/messaging/send-bulk
+ * Envoi groupé SMS ou WhatsApp
+ */
+app.post('/api/messaging/send-bulk', async (c) => {
+  try {
+    const request = await c.req.json();
+    const { recipients, template_id, channel, variables } = request;
+    
+    if (!recipients?.length || !template_id || !channel) {
+      return c.json({ error: 'Missing required fields' }, 400);
+    }
+    
+    if (recipients.length > 100) {
+      return c.json({ error: 'Maximum 100 recipients per bulk send' }, 400);
+    }
+    
+    // Récupérer template
+    const template = await getTemplate(template_id, c.env);
+    if (!template) {
+      return c.json({ error: 'Template not found' }, 404);
+    }
+    
+    // Envoyer à chaque destinataire
+    const results = [];
+    
+    for (const recipient of recipients) {
+      try {
+        // Remplacer variables dans template
+        let message = template.content;
+        if (variables) {
+          for (const [key, value] of Object.entries(variables)) {
+            message = message.replace(new RegExp(`{{${key}}}`, 'g'), String(value));
+          }
+        }
+        
+        // Envoyer selon canal
+        let result;
+        if (channel === 'sms') {
+          result = await sendSMS(recipient.phone, message, c.env);
+        } else if (channel === 'whatsapp') {
+          result = await sendWhatsApp(
+            recipient.phone,
+            template.whatsapp_template_name!,
+            template.language,
+            variables,
+            c.env
+          );
+        }
+        
+        results.push({
+          phone: recipient.phone,
+          success: true,
+          message_id: result?.message_id,
+        });
+      } catch (error: any) {
+        results.push({
+          phone: recipient.phone,
+          success: false,
+          error: error.message,
+        });
+      }
+    }
+    
+    return c.json({
+      success: true,
+      total_recipients: recipients.length,
+      successful_sends: results.filter(r => r.success).length,
+      failed_sends: results.filter(r => !r.success).length,
+      results,
+    });
+    
+  } catch (error: any) {
+    console.error('Bulk send error:', error);
+    return c.json({ error: 'Internal server error', details: error.message }, 500);
+  }
+});
+
+/**
+ * GET /api/messaging/templates
+ * Liste les templates de messages
+ */
+app.get('/api/messaging/templates', async (c) => {
+  try {
+    const channel = c.req.query('channel');
+    const category = c.req.query('category');
+    const active = c.req.query('active');
+    
+    const supabaseUrl = c.env.SUPABASE_URL;
+    const supabaseKey = c.env.SUPABASE_ANON_KEY;
+    
+    let url = `${supabaseUrl}/rest/v1/message_templates?select=*&order=created_at.desc`;
+    if (channel) url += `&channel=eq.${channel}`;
+    if (category) url += `&category=eq.${category}`;
+    if (active !== undefined) url += `&active=eq.${active}`;
+    
+    const response = await fetch(url, {
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+      },
+    });
+    
+    const templates = await response.json();
+    
+    return c.json({
+      success: true,
+      total_templates: templates.length,
+      templates,
+    });
+    
+  } catch (error: any) {
+    console.error('Templates list error:', error);
+    return c.json({ error: 'Internal server error', details: error.message }, 500);
+  }
+});
+
+/**
+ * POST /api/messaging/templates
+ * Crée un nouveau template
+ */
+app.post('/api/messaging/templates', async (c) => {
+  try {
+    const template: Partial<MessageTemplate> = await c.req.json();
+    
+    if (!template.name || !template.channel || !template.content) {
+      return c.json({ error: 'Missing required fields' }, 400);
+    }
+    
+    const supabaseUrl = c.env.SUPABASE_URL;
+    const supabaseKey = c.env.SUPABASE_ANON_KEY;
+    
+    // Extraire variables du contenu
+    const variableRegex = /{{(\w+)}}/g;
+    const variables: string[] = [];
+    let match;
+    while ((match = variableRegex.exec(template.content)) !== null) {
+      if (!variables.includes(match[1])) {
+        variables.push(match[1]);
+      }
+    }
+    
+    const newTemplate = {
+      template_id: crypto.randomUUID(),
+      name: template.name,
+      channel: template.channel,
+      language: template.language || 'fr',
+      content: template.content,
+      variables,
+      whatsapp_template_name: template.whatsapp_template_name,
+      category: template.category || 'alert',
+      active: template.active ?? true,
+      approval_status: template.channel === 'whatsapp' ? 'pending' : 'approved',
+      created_at: new Date().toISOString(),
+    };
+    
+    await fetch(`${supabaseUrl}/rest/v1/message_templates`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify(newTemplate),
+    });
+    
+    return c.json({ success: true, template: newTemplate });
+    
+  } catch (error: any) {
+    console.error('Create template error:', error);
+    return c.json({ error: 'Internal server error', details: error.message }, 500);
+  }
+});
+
+/**
+ * GET /api/messaging/history/:userId
+ * Historique messages d'un utilisateur
+ */
+app.get('/api/messaging/history/:userId', async (c) => {
+  try {
+    const userId = c.req.param('userId');
+    const channel = c.req.query('channel');
+    const startDate = c.req.query('start_date') || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const endDate = c.req.query('end_date') || new Date().toISOString();
+    const limit = parseInt(c.req.query('limit') || '100');
+    
+    const supabaseUrl = c.env.SUPABASE_URL;
+    const supabaseKey = c.env.SUPABASE_ANON_KEY;
+    
+    // Récupérer SMS
+    let smsMessages = [];
+    if (!channel || channel === 'sms') {
+      const smsUrl = `${supabaseUrl}/rest/v1/sms_messages?recipient_id=eq.${userId}&sent_at=gte.${startDate}&sent_at=lte.${endDate}&order=sent_at.desc&limit=${limit}`;
+      const smsResponse = await fetch(smsUrl, {
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+        },
+      });
+      smsMessages = await smsResponse.json();
+    }
+    
+    // Récupérer WhatsApp
+    let whatsappMessages = [];
+    if (!channel || channel === 'whatsapp') {
+      const whatsappUrl = `${supabaseUrl}/rest/v1/whatsapp_messages?recipient_id=eq.${userId}&sent_at=gte.${startDate}&sent_at=lte.${endDate}&order=sent_at.desc&limit=${limit}`;
+      const whatsappResponse = await fetch(whatsappUrl, {
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+        },
+      });
+      whatsappMessages = await whatsappResponse.json();
+    }
+    
+    // Combiner et trier
+    const allMessages = [
+      ...smsMessages.map((m: any) => ({ ...m, channel: 'sms' })),
+      ...whatsappMessages.map((m: any) => ({ ...m, channel: 'whatsapp' })),
+    ].sort((a, b) => new Date(b.sent_at).getTime() - new Date(a.sent_at).getTime());
+    
+    // Stats
+    const stats = {
+      total_messages: allMessages.length,
+      sms_count: smsMessages.length,
+      whatsapp_count: whatsappMessages.length,
+      delivered_count: allMessages.filter((m: any) => m.status === 'delivered' || m.status === 'read').length,
+      failed_count: allMessages.filter((m: any) => m.status === 'failed').length,
+    };
+    
+    return c.json({
+      success: true,
+      user_id: userId,
+      period: { start: startDate, end: endDate },
+      statistics: stats,
+      messages: allMessages.slice(0, limit),
+    });
+    
+  } catch (error: any) {
+    console.error('History error:', error);
+    return c.json({ error: 'Internal server error', details: error.message }, 500);
+  }
+});
+
+/**
+ * POST /api/messaging/opt-in
+ * Enregistre le consentement opt-in
+ */
+app.post('/api/messaging/opt-in', async (c) => {
+  try {
+    const { user_id, phone_number, sms_opt_in, whatsapp_opt_in, marketing_opt_in } = await c.req.json();
+    
+    if (!user_id || !phone_number) {
+      return c.json({ error: 'Missing required fields' }, 400);
+    }
+    
+    const supabaseUrl = c.env.SUPABASE_URL;
+    const supabaseKey = c.env.SUPABASE_ANON_KEY;
+    
+    const optInData = {
+      user_id,
+      phone_number,
+      sms_opt_in: sms_opt_in ?? false,
+      whatsapp_opt_in: whatsapp_opt_in ?? false,
+      marketing_opt_in: marketing_opt_in ?? false,
+      opted_in_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    
+    await fetch(`${supabaseUrl}/rest/v1/messaging_opt_in`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Prefer': 'resolution=merge-duplicates',
+      },
+      body: JSON.stringify(optInData),
+    });
+    
+    return c.json({ success: true, message: 'Opt-in preferences updated' });
+    
+  } catch (error: any) {
+    console.error('Opt-in error:', error);
+    return c.json({ error: 'Internal server error', details: error.message }, 500);
+  }
+});
+
+/**
+ * POST /api/messaging/opt-out
+ * Enregistre le retrait du consentement
+ */
+app.post('/api/messaging/opt-out', async (c) => {
+  try {
+    const { user_id, phone_number, channel, reason } = await c.req.json();
+    
+    if (!user_id || !phone_number) {
+      return c.json({ error: 'Missing required fields' }, 400);
+    }
+    
+    const supabaseUrl = c.env.SUPABASE_URL;
+    const supabaseKey = c.env.SUPABASE_ANON_KEY;
+    
+    const updateData: any = {
+      opted_out_at: new Date().toISOString(),
+      opt_out_reason: reason,
+      updated_at: new Date().toISOString(),
+    };
+    
+    if (channel === 'sms' || !channel) updateData.sms_opt_in = false;
+    if (channel === 'whatsapp' || !channel) updateData.whatsapp_opt_in = false;
+    if (!channel) updateData.marketing_opt_in = false;
+    
+    await fetch(`${supabaseUrl}/rest/v1/messaging_opt_in?user_id=eq.${user_id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify(updateData),
+    });
+    
+    return c.json({ success: true, message: 'Successfully opted out' });
+    
+  } catch (error: any) {
+    console.error('Opt-out error:', error);
+    return c.json({ error: 'Internal server error', details: error.message }, 500);
+  }
+});
+
+/**
+ * GET /api/messaging/analytics
+ * Analytics globales des messages
+ */
+app.get('/api/messaging/analytics', async (c) => {
+  try {
+    const startDate = c.req.query('start_date') || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const endDate = c.req.query('end_date') || new Date().toISOString();
+    
+    const supabaseUrl = c.env.SUPABASE_URL;
+    const supabaseKey = c.env.SUPABASE_ANON_KEY;
+    
+    // Récupérer stats SMS
+    const smsResponse = await fetch(
+      `${supabaseUrl}/rest/v1/sms_messages?sent_at=gte.${startDate}&sent_at=lte.${endDate}&select=*`,
+      {
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+        },
+      }
+    );
+    const smsMessages = await smsResponse.json();
+    
+    // Récupérer stats WhatsApp
+    const whatsappResponse = await fetch(
+      `${supabaseUrl}/rest/v1/whatsapp_messages?sent_at=gte.${startDate}&sent_at=lte.${endDate}&select=*`,
+      {
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+        },
+      }
+    );
+    const whatsappMessages = await whatsappResponse.json();
+    
+    // Calculer analytics
+    const analytics = {
+      period: { start: startDate, end: endDate },
+      total_messages: smsMessages.length + whatsappMessages.length,
+      by_channel: {
+        sms: {
+          total: smsMessages.length,
+          sent: smsMessages.filter((m: any) => m.status === 'sent' || m.status === 'delivered').length,
+          delivered: smsMessages.filter((m: any) => m.status === 'delivered').length,
+          failed: smsMessages.filter((m: any) => m.status === 'failed').length,
+          delivery_rate: (smsMessages.filter((m: any) => m.status === 'delivered').length / smsMessages.length * 100).toFixed(2) + '%',
+        },
+        whatsapp: {
+          total: whatsappMessages.length,
+          sent: whatsappMessages.filter((m: any) => m.status === 'sent' || m.status === 'delivered').length,
+          delivered: whatsappMessages.filter((m: any) => m.status === 'delivered').length,
+          read: whatsappMessages.filter((m: any) => m.status === 'read').length,
+          failed: whatsappMessages.filter((m: any) => m.status === 'failed').length,
+          delivery_rate: (whatsappMessages.filter((m: any) => m.status === 'delivered' || m.status === 'read').length / whatsappMessages.length * 100).toFixed(2) + '%',
+          read_rate: (whatsappMessages.filter((m: any) => m.status === 'read').length / whatsappMessages.length * 100).toFixed(2) + '%',
+        },
+      },
+      unique_recipients: new Set([
+        ...smsMessages.map((m: any) => m.recipient_phone),
+        ...whatsappMessages.map((m: any) => m.recipient_phone),
+      ]).size,
+    };
+    
+    return c.json({ success: true, analytics });
+    
+  } catch (error: any) {
+    console.error('Analytics error:', error);
+    return c.json({ error: 'Internal server error', details: error.message }, 500);
+  }
+});
+
+// ==================== HELPER FUNCTIONS ====================
+
+async function checkOptInStatus(phone: string, channel: string, env: Bindings): Promise<boolean> {
+  try {
+    const supabaseUrl = env.SUPABASE_URL;
+    const supabaseKey = env.SUPABASE_ANON_KEY;
+    
+    const response = await fetch(
+      `${supabaseUrl}/rest/v1/messaging_opt_in?phone_number=eq.${phone}&select=*`,
+      {
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+        },
+      }
+    );
+    
+    const records = await response.json();
+    if (!records?.length) return true; // Opt-in par défaut si pas d'enregistrement
+    
+    const record = records[0];
+    if (channel === 'sms') return record.sms_opt_in;
+    if (channel === 'whatsapp') return record.whatsapp_opt_in;
+    return false;
+  } catch {
+    return true; // En cas d'erreur, autoriser l'envoi
+  }
+}
+
+async function saveMessage(message: any, type: 'sms' | 'whatsapp', env: Bindings): Promise<void> {
+  const supabaseUrl = env.SUPABASE_URL;
+  const supabaseKey = env.SUPABASE_ANON_KEY;
+  
+  const table = type === 'sms' ? 'sms_messages' : 'whatsapp_messages';
+  
+  await fetch(`${supabaseUrl}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': supabaseKey,
+      'Authorization': `Bearer ${supabaseKey}`,
+      'Prefer': 'return=minimal',
+    },
+    body: JSON.stringify(message),
+  });
+}
+
+async function getTemplate(templateId: string, env: Bindings): Promise<MessageTemplate | null> {
+  try {
+    const supabaseUrl = env.SUPABASE_URL;
+    const supabaseKey = env.SUPABASE_ANON_KEY;
+    
+    const response = await fetch(
+      `${supabaseUrl}/rest/v1/message_templates?template_id=eq.${templateId}&select=*`,
+      {
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': `Bearer ${supabaseKey}`,
+        },
+      }
+    );
+    
+    const templates = await response.json();
+    return templates?.[0] || null;
+  } catch {
+    return null;
+  }
+}
+
+async function sendSMS(phone: string, message: string, env: Bindings): Promise<any> {
+  // Implémentation simplifiée - à compléter avec logique complète
+  return { message_id: crypto.randomUUID() };
+}
+
+async function sendWhatsApp(
+  phone: string,
+  templateName: string,
+  language: string,
+  variables: any,
+  env: Bindings
+): Promise<any> {
+  // Implémentation simplifiée - à compléter avec logique complète
+  return { message_id: crypto.randomUUID() };
+}
+
+export default app;
