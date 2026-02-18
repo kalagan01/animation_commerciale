@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - NeoImpact Animation Commerciale</title>
+    <link href="/css/neoimpact-design-system.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: #F5F5F5;
+            display: flex;
+            font-family: var(--font-family-base);
+        }
+
+        .login-wrapper {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* Left Side - Hero/Branding */
+        .login-hero {
+            flex: 1;
+            background: linear-gradient(135deg, #0D47A1 0%, #0097A7 50%, #00BCD4 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.2); opacity: 0.1; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-image {
+            width: 400px;
+            height: 300px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .car-illustration {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 120px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .hero-logo-icon {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-logo-icon::before {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00BCD4 0%, #FFD600 100%);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            transform: rotate(90deg);
+        }
+
+        .hero-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0 0 8px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 18px;
+            color: #FFD600;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        /* Right Side - Login Form */
+        .login-form-side {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px;
+            background: white;
+        }
+
+        .login-form-container {
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .login-form-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-form-header h1 {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--color-dark);
+            margin: 0 0 8px;
+        }
+
+        .login-form-header p {
+            font-size: 16px;
+            color: var(--color-text-secondary);
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 8px;
+        }
+
+        .form-input-wrapper {
+            position: relative;
+        }
+
+        .form-input-wrapper i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text-secondary);
+            font-size: 18px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 18px 16px 52px;
+            border: 1.5px solid var(--color-border);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 32px;
+        }
+
+        .forgot-password a {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 18px;
+            background-color: var(--color-secondary);
+            color: var(--color-dark);
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255, 214, 0, 0.3);
+        }
+
+        .btn-login:hover {
+            background-color: var(--color-secondary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 214, 0, 0.4);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .form-footer {
+            margin-top: 32px;
+            text-align: center;
+            padding-top: 24px;
+            border-top: 1px solid var(--color-border-light);
+        }
+
+        .form-footer p {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            margin: 0 0 16px;
+        }
+
+        .form-footer a {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .page-footer {
+            position: absolute;
+            bottom: 24px;
+            right: 48px;
+            color: var(--color-text-secondary);
+            font-size: 12px;
+        }
+
+        /* Loading state */
+        .btn-login.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-login.loading::after {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--color-dark);
+            border-top-color: transparent;
+            border-radius: 50%;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .login-hero {
+                display: none;
+            }
+            
+            .login-form-side {
+                flex: auto;
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-form-side {
+                padding: 24px;
+            }
+
+            .login-form-header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body>
+    <div class="login-wrapper">
+        <!-- Left Side - Hero -->
+        <div class="login-hero">
+            <div class="hero-content">
+                <div class="hero-logo">
+                    <div class="hero-logo-icon"></div>
+                </div>
+                
+                <div class="hero-image">
+                    <div class="car-illustration">
+                        <i class="fas fa-car" style="color: rgba(255,255,255,0.3);"></i>
+                    </div>
+                </div>
+
+                <h2 class="hero-title">NeoImpact</h2>
+                <p class="hero-subtitle">ديما معك</p>
+            </div>
+        </div>
+
+        <!-- Right Side - Login Form -->
+        <div class="login-form-side">
+            <div class="login-form-container">
+                <div class="login-form-header">
+                    <!-- Logo NeoImpact -->
+                <div class="neoimpact-logo" style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
+                    <div class="logo-icon">
+                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="line-height: 1.2;">
+                        <div class="logo-arabic" style="font-size: 14px; font-weight: 600; color: #00A5A8;">وفاسلف</div>
+                        <div class="logo-latin" style="font-size: 10px; color: #6B6B6B; letter-spacing: 1px;">NeoImpact</div>
+                    </div>
+                </div>
+<h1>Connexion</h1>
+                    <p>Bienvenue sur votre espace</p>
+                </div>
+
+                <form id="loginForm">
+                    <!-- Email Input -->
+                    <div class="form-group">
+                        <label class="form-label">Adresse e-mail</label>
+                        <div class="form-input-wrapper">
+                            <i class="fas fa-envelope"></i>
+                            <input 
+                                type="email" 
+                                class="form-input" 
+                                placeholder="Adresse e-mail"
+                                id="email"
+                                required
+                                autocomplete="email"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="form-group">
+                        <label class="form-label">Mot de passe</label>
+                        <div class="form-input-wrapper">
+                            <i class="fas fa-lock"></i>
+                            <input 
+                                type="password" 
+                                class="form-input" 
+                                placeholder="Mot de passe"
+                                id="password"
+                                required
+                                autocomplete="current-password"
+                            >
+                            <button type="button" class="password-toggle" onclick="togglePassword()">
+                                <i class="fas fa-eye-slash" id="passwordIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Forgot Password -->
+                    <div class="forgot-password">
+                        <a href="/forgot-password">Mot de passe oublié?</a>
+                    </div>
+
+                    <!-- Login Button -->
+                    <button type="submit" class="btn-login">
+                        Se connecter
+                    </button>
+
+                    <!-- Footer -->
+                    <div class="form-footer">
+                        <p>Première connexion?</p>
+                        <a href="/register">Créer un compte</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="page-footer">
+                Created by Stratwise Africa<br>
+                © 2025 NeoImpact
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle Password Visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const passwordIcon = document.getElementById('passwordIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                passwordIcon.classList.remove('fa-eye-slash');
+                passwordIcon.classList.add('fa-eye');
+            } else {
+                passwordInput.type = 'password';
+                passwordIcon.classList.remove('fa-eye');
+                passwordIcon.classList.add('fa-eye-slash');
+            }
+        }
+
+        // Handle Login Form Submit
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = e.target.querySelector('.btn-login');
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Add loading state
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Redirect to dashboard
+                    window.location.href = '/static/dashboard.html';
+                } else {
+                    alert('Email ou mot de passe incorrect');
+                    btn.classList.remove('loading');
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Erreur de connexion. Veuillez réessayer.');
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        });
+
+        // Auto-fill demo credentials for development
+        if (window.location.hostname === 'localhost' || window.location.hostname.includes('sandbox')) {
+            document.getElementById('email').value = 'admin@neoimpact.ma';
+            document.getElementById('password').value = 'demo123';
+        }
+    </script>
+</body>
+</html>

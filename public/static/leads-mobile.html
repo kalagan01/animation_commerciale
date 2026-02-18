@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leads Commerciaux - NeoImpact</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-wa-primary text-white sticky top-0 z-50 shadow-lg">
+        <div class="flex items-center justify-between px-4 py-4">
+            <a href="/static/dashboard-mobile.html"><i class="fas fa-arrow-left text-xl"></i></a>
+            <!-- Logo NeoImpact -->
+                <div class="neoimpact-logo" style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
+                    <div class="logo-icon">
+                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="line-height: 1.2;">
+                        <div class="logo-arabic" style="font-size: 14px; font-weight: 600; color: #00A5A8;">وفاسلف</div>
+                        <div class="logo-latin" style="font-size: 10px; color: #6B6B6B; letter-spacing: 1px;">NeoImpact</div>
+                    </div>
+                </div>
+<h1 class="text-lg font-bold flex-1 text-center">Leads Commerciaux</h1>
+            <button id="filter-btn"><i class="fas fa-filter text-xl"></i></button>
+        </div>
+    </nav>
+
+    <div class="px-4 py-3 bg-white border-b">
+        <div class="grid grid-cols-4 gap-2">
+            <div class="bg-blue-50 rounded-lg p-2 text-center">
+                <div id="stat-new" class="text-xl font-bold text-[#00A5A8]">0</div>
+                <div class="text-xs text-gray-600">Nouveaux</div>
+            </div>
+            <div class="bg-yellow-50 rounded-lg p-2 text-center">
+                <div id="stat-contacted" class="text-xl font-bold text-yellow-600">0</div>
+                <div class="text-xs text-gray-600">Contactés</div>
+            </div>
+            <div class="bg-purple-50 rounded-lg p-2 text-center">
+                <div id="stat-qualified" class="text-xl font-bold text-purple-600">0</div>
+                <div class="text-xs text-gray-600">Qualifiés</div>
+            </div>
+            <div class="bg-green-50 rounded-lg p-2 text-center">
+                <div id="stat-converted" class="text-xl font-bold text-[#00A5A8]">0</div>
+                <div class="text-xs text-gray-600">Convertis</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white px-4 py-3 border-b">
+        <select id="filter-status" class="w-full px-3 py-2 border rounded-lg text-sm">
+            <option value="">Tous les leads</option>
+            <option value="new">Nouveaux</option>
+            <option value="contacted">Contactés</option>
+            <option value="qualified">Qualifiés</option>
+            <option value="converted">Convertis</option>
+            <option value="lost">Perdus</option>
+        </select>
+    </div>
+
+    <div id="leads-container" class="px-4 py-3 space-y-3 pb-20"></div>
+    <div id="loading" class="text-center py-12 hidden"><i class="fas fa-spinner fa-spin text-4xl text-wa-primary"></i></div>
+    <div id="empty" class="text-center py-12 hidden"><i class="fas fa-user-plus text-6xl text-gray-300 mb-3"></i><p class="text-gray-500">Aucun lead</p></div>
+
+    <button id="add-lead-btn" class="fixed bottom-20 right-5 w-14 h-14 bg-wa-primary text-white rounded-full shadow-2xl flex items-center justify-center z-40">
+        <i class="fas fa-plus text-xl"></i>
+    </button>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t z-50">
+        <div class="grid grid-cols-4 h-16">
+            <a href="/static/dashboard-mobile.html" class="flex flex-col items-center justify-center text-gray-500">
+                <i class="fas fa-home text-xl"></i>
+                <span class="text-xs">Accueil</span>
+            </a>
+            <a href="/static/partners-list-mobile.html" class="flex flex-col items-center justify-center text-gray-500">
+                <i class="fas fa-users text-xl"></i>
+                <span class="text-xs">Partenaires</span>
+            </a>
+            <a href="/static/visits-mobile.html" class="flex flex-col items-center justify-center text-gray-500">
+                <i class="fas fa-route text-xl"></i>
+                <span class="text-xs">Visites</span>
+            </a>
+            <a href="/static/profile-mobile.html" class="flex flex-col items-center justify-center text-gray-500">
+                <i class="fas fa-user text-xl"></i>
+                <span class="text-xs">Profil</span>
+            </a>
+        </div>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script>
+        const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000' : window.location.origin;
+        
+        // Mock data (à remplacer par API réelle)
+        const mockLeads = [
+            { id: '1', company_name: 'Auto Maroc', contact_name: 'Ahmed Benali', email: 'ahmed@automaroc.ma', phone: '+212 6 12 34 56 78', status: 'new', source: 'website', score: 85, created_at: '2026-02-10' },
+            { id: '2', company_name: 'Électro Plus', contact_name: 'Fatima Zahra', email: 'fatima@electroplus.ma', phone: '+212 6 98 76 54 32', status: 'contacted', source: 'referral', score: 72, created_at: '2026-02-08' },
+            { id: '3', company_name: 'Meubles Design', contact_name: 'Youssef Alami', email: 'youssef@meublesdesign.ma', phone: '+212 6 55 44 33 22', status: 'qualified', source: 'cold_call', score: 90, created_at: '2026-02-05' }
+        ];
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadLeads();
+            document.getElementById('filter-status').addEventListener('change', loadLeads);
+            document.getElementById('add-lead-btn').addEventListener('click', () => {
+                alert('Fonctionnalité à venir : Création de lead');
+            });
+        });
+
+        function checkAuth() {
+            if (!localStorage.getItem('access_token')) window.location.href = '/static/login-mobile.html';
+        }
+
+        function loadLeads() {
+            const container = document.getElementById('leads-container');
+            const loading = document.getElementById('loading');
+            const empty = document.getElementById('empty');
+            const status = document.getElementById('filter-status').value;
+            
+            container.innerHTML = '';
+            empty.classList.add('hidden');
+            loading.classList.remove('hidden');
+
+            setTimeout(() => {
+                loading.classList.add('hidden');
+                const filteredLeads = status ? mockLeads.filter(l => l.status === status) : mockLeads;
+                
+                if (filteredLeads.length) {
+                    container.innerHTML = filteredLeads.map(renderLeadCard).join('');
+                    updateStats(mockLeads);
+                } else {
+                    empty.classList.remove('hidden');
+                }
+            }, 300);
+        }
+
+        function renderLeadCard(lead) {
+            const statusColors = {
+                new: 'border-blue-500 bg-blue-50',
+                contacted: 'border-yellow-500 bg-yellow-50',
+                qualified: 'border-purple-500 bg-purple-50',
+                converted: 'border-green-500 bg-green-50',
+                lost: 'border-red-500 bg-red-50'
+            };
+            const statusLabels = { new: 'Nouveau', contacted: 'Contacté', qualified: 'Qualifié', converted: 'Converti', lost: 'Perdu' };
+            const scoreColor = lead.score >= 80 ? 'text-[#00A5A8]' : lead.score >= 60 ? 'text-yellow-600' : 'text-red-600';
+            
+            return `
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 ${statusColors[lead.status] || statusColors.new}">
+                    <div class="flex items-start justify-between mb-2">
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-900 mb-1">${lead.company_name}</h3>
+                            <p class="text-sm text-gray-600">${lead.contact_name}</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs font-medium text-gray-500">${statusLabels[lead.status]}</span>
+                            <p class="text-lg font-bold ${scoreColor}">${lead.score}%</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-3 text-sm text-gray-600 mb-3">
+                        <a href="tel:${lead.phone}" class="flex items-center"><i class="fas fa-phone text-[#00A5A8] mr-1"></i>${lead.phone}</a>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="contactLead('${lead.id}')" class="flex-1 bg-wa-primary text-white px-3 py-2 rounded-lg text-sm">
+                            <i class="fas fa-phone-alt mr-1"></i>Contacter
+                        </button>
+                        <button onclick="viewLead('${lead.id}')" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function contactLead(leadId) {
+            showAlert('Ouverture de l\'interface de contact...', 'info');
+        }
+
+        function viewLead(leadId) {
+            window.location.href = `/static/lead-detail-mobile.html?id=${leadId}`;
+        }
+
+        function updateStats(leads) {
+            const stats = leads.reduce((acc, l) => {
+                acc[l.status] = (acc[l.status] || 0) + 1;
+                return acc;
+            }, {});
+            
+            document.getElementById('stat-new').textContent = stats.new || 0;
+            document.getElementById('stat-contacted').textContent = stats.contacted || 0;
+            document.getElementById('stat-qualified').textContent = stats.qualified || 0;
+            document.getElementById('stat-converted').textContent = stats.converted || 0;
+        }
+
+        function showAlert(message, type = 'info') {
+            const colors = { success: 'bg-green-500', error: 'bg-red-500', info: 'bg-blue-500' };
+            const div = document.createElement('div');
+            div.className = `fixed top-20 left-4 right-4 ${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg z-50`;
+            div.innerHTML = `<span>${message}</span>`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

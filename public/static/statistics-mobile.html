@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques - NeoImpact</title>
+    <link href="/css/neoimpact-design-system.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #F5F5F5;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0097A7 0%, #00BCD4 100%);
+            color: white;
+            padding: 16px 20px;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .stat-card h3 {
+            font-size: 16px;
+            margin: 0 0 16px;
+            color: var(--color-dark);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--color-primary);
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .chart-placeholder {
+            height: 200px;
+            background: #F5F5F5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-text-disabled);
+            font-size: 14px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--color-border-light);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--color-text-secondary);
+            font-size: 11px;
+            padding: 8px;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item.active {
+            color: var(--color-primary);
+        }
+    </style>
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body>
+    <div class="header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <button style="background: rgba(255,255,255,0.2); border: none; width: 36px; height: 36px; border-radius: 50%; color: white; cursor: pointer;" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div>
+                <!-- Logo NeoImpact -->
+                <div class="neoimpact-logo" style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
+                    <div class="logo-icon">
+                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="line-height: 1.2;">
+                        <div class="logo-arabic" style="font-size: 14px; font-weight: 600; color: #00A5A8;">وفاسلف</div>
+                        <div class="logo-latin" style="font-size: 10px; color: #6B6B6B; letter-spacing: 1px;">NeoImpact</div>
+                    </div>
+                </div>
+<h1 style="margin: 0; font-size: 20px;">Statistiques</h1>
+                <p style="margin: 4px 0 0; font-size: 13px; opacity: 0.9;">Février 2025</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="stat-card">
+            <h3><i class="fas fa-chart-line"></i> Performance du mois</h3>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                <div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">Dossiers traités</div>
+                </div>
+                <div>
+                    <div class="stat-value" style="color: var(--color-success);">85%</div>
+                    <div class="stat-label">Taux de conversion</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <h3><i class="fas fa-wallet"></i> Volume financier</h3>
+            <div class="stat-value">1.2M MAD</div>
+            <div class="stat-label">Volume total financé</div>
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--color-border-light);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-size: 13px; color: var(--color-text-secondary);">Montant moyen:</span>
+                    <strong>100,000 MAD</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="font-size: 13px; color: var(--color-text-secondary);">Nombre de crédits:</span>
+                    <strong>12</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <h3><i class="fas fa-chart-bar"></i> Répartition par type</h3>
+            <div class="chart-placeholder">
+                <i class="fas fa-chart-pie" style="font-size: 48px; opacity: 0.3;"></i>
+            </div>
+            <div style="margin-top: 16px;">
+                <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                    <span>Crédit Auto</span>
+                    <strong>65%</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--color-border-light);">
+                    <span>Crédit Moto</span>
+                    <strong>25%</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-top: 1px solid var(--color-border-light);">
+                    <span>Autres</span>
+                    <strong>10%</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <h3><i class="fas fa-trophy"></i> Objectifs</h3>
+            <div style="margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                    <span style="font-size: 14px;">Objectif mensuel</span>
+                    <strong>15 dossiers</strong>
+                </div>
+                <div style="height: 12px; background: #E0E0E0; border-radius: 6px; overflow: hidden;">
+                    <div style="width: 80%; height: 100%; background: linear-gradient(90deg, var(--color-primary), var(--color-success));"></div>
+                </div>
+                <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 4px;">
+                    80% de l'objectif atteint (12/15)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="/static/dashboard-mobile.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
+        </a>
+        <a href="/static/dossiers-mobile.html" class="nav-item">
+            <i class="fas fa-folder"></i>
+            <span>Dossiers</span>
+        </a>
+        <a href="/static/simulation-mobile.html" class="nav-item">
+            <i class="fas fa-calculator"></i>
+            <span>Simulation</span>
+        </a>
+        <a href="/static/statistics-mobile.html" class="nav-item active">
+            <i class="fas fa-chart-bar"></i>
+            <span>Stats</span>
+        </a>
+        <a href="/static/profil-mobile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profil</span>
+        </a>
+    </div>
+</body>
+</html>

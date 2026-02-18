@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS Route Optimization - NeoImpact</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.0/mapbox-gl.js"></script>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+            border-radius: 0.5rem;
+        }
+        
+        .mapboxgl-popup {
+            max-width: 300px;
+        }
+        
+        .route-leg {
+            transition: all 0.3s ease;
+        }
+        
+        .route-leg:hover {
+            background-color: #f3f4f6;
+            transform: scale(1.02);
+        }
+        
+        .waypoint-marker {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .waypoint-high { background-color: #ef4444; }
+        .waypoint-medium { background-color: #f59e0b; }
+        .waypoint-low { background-color: #10b981; }
+        
+        .tracking-active {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .7; }
+        }
+    </style>
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body class="bg-gray-100 p-4">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <!-- Logo NeoImpact -->
+                <div class="neoimpact-logo" style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
+                    <div class="logo-icon">
+                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="line-height: 1.2;">
+                        <div class="logo-arabic" style="font-size: 14px; font-weight: 600; color: #00A5A8;">وفاسلف</div>
+                        <div class="logo-latin" style="font-size: 10px; color: #6B6B6B; letter-spacing: 1px;">NeoImpact</div>
+                    </div>
+                </div>
+<h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3">
+                        <i class="fas fa-route text-blue-500"></i>
+                        Optimisation d'Itinéraires GPS
+                    </h1>
+                    <p class="text-gray-600 mt-2">Planification et suivi en temps réel</p>
+                </div>
+                <div class="flex gap-3">
+                    <button id="btn-start-tracking" class="bg-green-500 hover:bg-[#FFD600] text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow transition">
+                        <i class="fas fa-play"></i>
+                        <span>Démarrer Tracking</span>
+                    </button>
+                    <button id="btn-stop-tracking" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 shadow transition hidden">
+                        <i class="fas fa-stop"></i>
+                        <span>Arrêter Tracking</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="bg-white rounded-lg shadow-md mb-6">
+            <div class="flex border-b">
+                <button class="tab-btn px-6 py-4 font-semibold text-[#00A5A8] border-b-2 border-[#00A5A8]" data-tab="plan">
+                    <i class="fas fa-map-marked-alt mr-2"></i>Planifier Route
+                </button>
+                <button class="tab-btn px-6 py-4 font-semibold text-gray-600" data-tab="tracking">
+                    <i class="fas fa-location-arrow mr-2"></i>Tracking Live
+                </button>
+                <button class="tab-btn px-6 py-4 font-semibold text-gray-600" data-tab="history">
+                    <i class="fas fa-history mr-2"></i>Historique
+                </button>
+                <button class="tab-btn px-6 py-4 font-semibold text-gray-600" data-tab="stats">
+                    <i class="fas fa-chart-line mr-2"></i>Statistiques
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab: Plan Route -->
+        <div id="tab-plan" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Configuration Panel -->
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-cog text-gray-600"></i>
+                            Configuration
+                        </h2>
+
+                        <!-- Animator Selection -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Animateur</label>
+                            <select id="input-animator" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="animator-1">Mohamed Alami</option>
+                                <option value="animator-2">Fatima Bennis</option>
+                                <option value="animator-3">Youssef Chraibi</option>
+                            </select>
+                        </div>
+
+                        <!-- Optimization Criteria -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Critère d'optimisation</label>
+                            <select id="input-criteria" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500">
+                                <option value="balanced">Équilibré (recommandé)</option>
+                                <option value="time">Temps minimal</option>
+                                <option value="distance">Distance minimale</option>
+                                <option value="priority">Par priorité</option>
+                            </select>
+                        </div>
+
+                        <!-- Waypoints List -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-2 flex items-center justify-between">
+                                <span>Points de visite</span>
+                                <button id="btn-add-waypoint" class="text-[#00A5A8] hover:text-blue-800 text-sm">
+                                    <i class="fas fa-plus-circle mr-1"></i>Ajouter
+                                </button>
+                            </label>
+                            <div id="waypoints-list" class="space-y-2 max-h-64 overflow-y-auto">
+                                <!-- Waypoints will be added here dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="space-y-3">
+                            <button id="btn-optimize" class="w-full bg-[#00A5A8] hover:bg-blue-700 text-white py-3 rounded-lg font-semibold shadow-md transition flex items-center justify-center gap-2">
+                                <i class="fas fa-route"></i>
+                                Optimiser l'itinéraire
+                            </button>
+                            <button id="btn-clear" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 rounded-lg font-semibold transition">
+                                <i class="fas fa-trash-alt mr-2"></i>Effacer tout
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Route Summary -->
+                    <div id="route-summary" class="bg-white rounded-lg shadow-md p-6 mt-6 hidden">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-info-circle text-[#00A5A8]"></i>
+                            Résumé de la route
+                        </h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex justify-between items-center p-3 bg-blue-50 rounded">
+                                <span class="text-gray-700"><i class="fas fa-road mr-2 text-[#00A5A8]"></i>Distance totale</span>
+                                <span id="summary-distance" class="font-bold text-gray-900">-</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-green-50 rounded">
+                                <span class="text-gray-700"><i class="fas fa-clock mr-2 text-[#00A5A8]"></i>Durée estimée</span>
+                                <span id="summary-duration" class="font-bold text-gray-900">-</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-yellow-50 rounded">
+                                <span class="text-gray-700"><i class="fas fa-map-marker-alt mr-2 text-yellow-600"></i>Visites</span>
+                                <span id="summary-visits" class="font-bold text-gray-900">-</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-purple-50 rounded">
+                                <span class="text-gray-700"><i class="fas fa-gas-pump mr-2 text-purple-600"></i>Coût carburant</span>
+                                <span id="summary-fuel" class="font-bold text-gray-900">-</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-indigo-50 rounded">
+                                <span class="text-gray-700"><i class="fas fa-star mr-2 text-indigo-600"></i>Score d'optimisation</span>
+                                <span id="summary-score" class="font-bold text-gray-900">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map and Results -->
+                <div class="lg:col-span-2">
+                    <!-- Map -->
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-map text-[#00A5A8]"></i>
+                            Carte Interactive
+                        </h2>
+                        <div id="map"></div>
+                        <p class="text-sm text-gray-600 mt-2">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            Cliquez sur la carte pour ajouter des points de visite
+                        </p>
+                    </div>
+
+                    <!-- Route Details -->
+                    <div id="route-details" class="bg-white rounded-lg shadow-md p-6 hidden">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <i class="fas fa-list-ol text-[#00A5A8]"></i>
+                            Détail de l'itinéraire
+                        </h2>
+                        <div id="route-legs-list" class="space-y-2">
+                            <!-- Route legs will be inserted here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Tracking Live -->
+        <div id="tab-tracking" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                        <h2 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-location-arrow text-green-500 tracking-active"></i>
+                            Position en temps réel
+                        </h2>
+                        <div id="tracking-map" class="h-96 rounded-lg"></div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-1">
+                    <div class="bg-white rounded-lg shadow-md p-6">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Informations GPS</h3>
+                        <div id="gps-info" class="space-y-3 text-sm">
+                            <div class="p-3 bg-gray-50 rounded">
+                                <div class="text-gray-600">Latitude</div>
+                                <div id="gps-lat" class="font-mono font-bold">-</div>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded">
+                                <div class="text-gray-600">Longitude</div>
+                                <div id="gps-lon" class="font-mono font-bold">-</div>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded">
+                                <div class="text-gray-600">Précision</div>
+                                <div id="gps-accuracy" class="font-mono font-bold">-</div>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded">
+                                <div class="text-gray-600">Vitesse</div>
+                                <div id="gps-speed" class="font-mono font-bold">-</div>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded">
+                                <div class="text-gray-600">Cap</div>
+                                <div id="gps-heading" class="font-mono font-bold">-</div>
+                            </div>
+                        </div>
+
+                        <div id="deviation-alert" class="mt-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 rounded hidden">
+                            <div class="flex items-start">
+                                <i class="fas fa-exclamation-triangle mr-3 mt-1"></i>
+                                <div>
+                                    <p class="font-semibold">Déviation détectée!</p>
+                                    <p id="deviation-message" class="text-sm mt-1">-</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: History -->
+        <div id="tab-history" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">
+                    <i class="fas fa-history text-gray-600"></i>
+                    Historique des routes
+                </h2>
+                <div id="routes-history-list" class="space-y-3">
+                    <!-- History items will be inserted here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Statistics -->
+        <div id="tab-stats" class="tab-content hidden">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-100 text-sm">Routes totales</p>
+                            <p id="stat-total-routes" class="text-3xl font-bold">-</p>
+                        </div>
+                        <i class="fas fa-route text-5xl text-blue-300 opacity-50"></i>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-green-500 to-green-600 text-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-green-100 text-sm">Distance (km)</p>
+                            <p id="stat-total-distance" class="text-3xl font-bold">-</p>
+                        </div>
+                        <i class="fas fa-road text-5xl text-green-300 opacity-50"></i>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 text-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-yellow-100 text-sm">Temps (heures)</p>
+                            <p id="stat-total-duration" class="text-3xl font-bold">-</p>
+                        </div>
+                        <i class="fas fa-clock text-5xl text-yellow-300 opacity-50"></i>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-purple-100 text-sm">Carburant (MAD)</p>
+                            <p id="stat-total-fuel" class="text-3xl font-bold">-</p>
+                        </div>
+                        <i class="fas fa-gas-pump text-5xl text-purple-300 opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Performance par animateur</h3>
+                <div id="animator-performance-list" class="space-y-3">
+                    <!-- Performance items will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script src="/static/gps-routing-engine.js"></script>
+</body>
+</html>

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Détail Dossier - NeoImpact</title>
+    <link href="/css/neoimpact-design-system.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #F5F5F5;
+            padding-bottom: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0097A7 0%, #00BCD4 100%);
+            color: white;
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-title {
+            flex: 1;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-icon {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Status Banner */
+        .status-banner {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .status-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .status-icon.success {
+            background: #E8F5E9;
+            color: var(--color-success);
+        }
+
+        .status-icon.warning {
+            background: #FFF9C4;
+            color: var(--color-warning);
+        }
+
+        .status-icon.info {
+            background: #E0F7FA;
+            color: var(--color-primary);
+        }
+
+        .status-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--color-dark);
+            margin-bottom: 4px;
+        }
+
+        .status-subtitle {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        /* Content */
+        .content {
+            padding: 16px 20px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--color-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: var(--color-primary);
+        }
+
+        .section-action {
+            color: var(--color-primary);
+            font-size: 13px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .info-label {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            flex: 1;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-dark);
+            text-align: right;
+            flex: 1;
+        }
+
+        .info-highlight {
+            color: var(--color-primary);
+            font-size: 18px;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 32px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 8px;
+            bottom: 8px;
+            width: 2px;
+            background: var(--color-border);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: -28px;
+            top: 4px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .timeline-dot.success { background: var(--color-success); }
+        .timeline-dot.info { background: var(--color-primary); }
+        .timeline-dot.warning { background: var(--color-warning); }
+
+        .timeline-content {
+            padding-bottom: 16px;
+        }
+
+        .timeline-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-dark);
+            margin-bottom: 4px;
+        }
+
+        .timeline-subtitle {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .timeline-time {
+            font-size: 11px;
+            color: var(--color-text-disabled);
+        }
+
+        /* Documents Grid */
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .document-card {
+            background: #F5F5F5;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .document-card:active {
+            transform: scale(0.98);
+        }
+
+        .document-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .document-icon.pdf {
+            background: #FFEBEE;
+            color: #D32F2F;
+        }
+
+        .document-icon.image {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .document-name {
+            font-size: 12px;
+            color: var(--color-dark);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .document-size {
+            font-size: 10px;
+            color: var(--color-text-disabled);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 16px 20px;
+            border-top: 1px solid var(--color-border-light);
+            display: flex;
+            gap: 12px;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .btn-secondary {
+            flex: 1;
+            background: white;
+            border: 1px solid var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        .btn-primary {
+            flex: 2;
+            background: linear-gradient(135deg, #FFD600 0%, #FFC107 100%);
+            color: var(--color-dark);
+        }
+    </style>
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <button class="back-btn" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="header-title">
+                <div>Dossier <span id="dossierId">DOS-2025-001</span></div>
+                <div class="header-subtitle" id="dossierClient">Youssef Benali</div>
+            </div>
+            <div class="header-actions">
+                <button class="header-icon">
+                    <i class="fas fa-share-alt"></i>
+                </button>
+                <button class="header-icon">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Banner -->
+    <div class="status-banner">
+        <div class="status-icon info">
+            <i class="fas fa-clock"></i>
+        </div>
+        <div class="status-title" id="statusTitle">En cours de traitement</div>
+        <div class="status-subtitle">Dernière mise à jour: 14/02/2025 à 10:15</div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <!-- Client Info Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fas fa-user"></i>
+                    Informations Client
+                </div>
+                <a href="#" class="section-action">Modifier</a>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Nom complet</div>
+                    <div class="info-value">Youssef Benali</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">CIN</div>
+                    <div class="info-value">AA123456</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Téléphone</div>
+                    <div class="info-value">+212 6 12 34 56 78</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Email</div>
+                    <div class="info-value">youssef.benali@email.ma</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Revenu mensuel</div>
+                    <div class="info-value">12,000 MAD</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Credit Info Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fas fa-calculator"></i>
+                    Détails du Crédit
+                </div>
+            </div>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Véhicule</div>
+                    <div class="info-value">Renault Clio</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Prix total</div>
+                    <div class="info-value info-highlight">120,000 MAD</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Apport initial</div>
+                    <div class="info-value">30,000 MAD</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Montant financé</div>
+                    <div class="info-value">90,000 MAD</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Durée</div>
+                    <div class="info-value">48 mois</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Taux d'intérêt</div>
+                    <div class="info-value">5.5%</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Mensualité</div>
+                    <div class="info-value info-highlight">2,080 MAD</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fas fa-paperclip"></i>
+                    Documents (4)
+                </div>
+                <a href="#" class="section-action">Ajouter</a>
+            </div>
+            <div class="documents-grid">
+                <div class="document-card">
+                    <div class="document-icon pdf">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div class="document-name">CIN_recto.pdf</div>
+                    <div class="document-size">1.2 MB</div>
+                </div>
+                <div class="document-card">
+                    <div class="document-icon pdf">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div class="document-name">CIN_verso.pdf</div>
+                    <div class="document-size">1.1 MB</div>
+                </div>
+                <div class="document-card">
+                    <div class="document-icon image">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <div class="document-name">Fiche_paie.jpg</div>
+                    <div class="document-size">2.3 MB</div>
+                </div>
+                <div class="document-card">
+                    <div class="document-icon pdf">
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <div class="document-name">RIB.pdf</div>
+                    <div class="document-size">0.8 MB</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline Section -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">
+                    <i class="fas fa-history"></i>
+                    Historique
+                </div>
+            </div>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot info"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Dossier créé</div>
+                        <div class="timeline-subtitle">Par Ahmed Alami (Agent)</div>
+                        <div class="timeline-time">14/02/2025 à 10:15</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot info"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Documents téléchargés</div>
+                        <div class="timeline-subtitle">4 documents ajoutés</div>
+                        <div class="timeline-time">14/02/2025 à 10:30</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot success"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">Simulation effectuée</div>
+                        <div class="timeline-subtitle">Mensualité: 2,080 MAD</div>
+                        <div class="timeline-time">14/02/2025 à 10:45</div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot warning"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-title">En attente de validation</div>
+                        <div class="timeline-subtitle">Superviseur: Hassan Bennis</div>
+                        <div class="timeline-time">14/02/2025 à 11:00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <button class="btn btn-secondary">
+            <i class="fas fa-phone"></i> Appeler
+        </button>
+        <button class="btn btn-primary">
+            <i class="fas fa-check"></i> Valider le dossier
+        </button>
+    </div>
+
+    <script>
+        // Load dossier details from URL parameter or API
+        document.addEventListener('DOMContentLoaded', () => {
+            // In production, fetch data from API
+            // For demo, use static data
+            const dossierId = new URLSearchParams(window.location.search).get('id') || 'DOS-2025-001';
+            document.getElementById('dossierId').textContent = dossierId;
+        });
+    </script>
+</body>
+</html>

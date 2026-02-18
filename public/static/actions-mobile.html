@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actions Terrain - NeoImpact</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-wa-primary text-white sticky top-0 z-50 shadow-lg">
+        <div class="flex items-center justify-between px-4 py-4">
+            <a href="/static/dashboard-mobile.html"><i class="fas fa-arrow-left text-xl"></i></a>
+            <!-- Logo NeoImpact -->
+                <div class="neoimpact-logo" style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
+                    <div class="logo-icon">
+                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="line-height: 1.2;">
+                        <div class="logo-arabic" style="font-size: 14px; font-weight: 600; color: #00A5A8;">وفاسلف</div>
+                        <div class="logo-latin" style="font-size: 10px; color: #6B6B6B; letter-spacing: 1px;">NeoImpact</div>
+                    </div>
+                </div>
+<h1 class="text-lg font-bold flex-1 text-center">Actions Terrain</h1>
+            <button id="filter-btn"><i class="fas fa-filter text-xl"></i></button>
+        </div>
+    </nav>
+
+    <div class="px-4 py-3 bg-white border-b">
+        <div class="grid grid-cols-3 gap-2">
+            <div class="bg-red-50 rounded-lg p-3 text-center">
+                <div id="stat-urgent" class="text-2xl font-bold text-red-600">0</div>
+                <div class="text-xs text-gray-600">Urgentes</div>
+            </div>
+            <div class="bg-yellow-50 rounded-lg p-3 text-center">
+                <div id="stat-open" class="text-2xl font-bold text-yellow-600">0</div>
+                <div class="text-xs text-gray-600">Ouvertes</div>
+            </div>
+            <div class="bg-green-50 rounded-lg p-3 text-center">
+                <div id="stat-completed" class="text-2xl font-bold text-[#00A5A8]">0</div>
+                <div class="text-xs text-gray-600">Complétées</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white px-4 py-3 border-b space-y-2">
+        <select id="filter-status" class="w-full px-3 py-2 border rounded-lg text-sm">
+            <option value="">Toutes les actions</option>
+            <option value="open">Ouvertes</option>
+            <option value="in_progress">En cours</option>
+            <option value="completed">Complétées</option>
+        </select>
+        <select id="filter-priority" class="w-full px-3 py-2 border rounded-lg text-sm">
+            <option value="">Toutes priorités</option>
+            <option value="urgent">Urgentes</option>
+            <option value="high">Hautes</option>
+            <option value="medium">Moyennes</option>
+            <option value="low">Basses</option>
+        </select>
+    </div>
+
+    <div id="actions-container" class="px-4 py-3 space-y-3 pb-20"></div>
+    <div id="loading" class="text-center py-12 hidden"><i class="fas fa-spinner fa-spin text-4xl text-wa-primary"></i></div>
+    <div id="empty" class="text-center py-12 hidden"><i class="fas fa-tasks text-6xl text-gray-300 mb-3"></i><p class="text-gray-500">Aucune action</p></div>
+
+    <button id="add-action-btn" class="fixed bottom-20 right-5 w-14 h-14 bg-wa-primary text-white rounded-full shadow-2xl flex items-center justify-center z-40">
+        <i class="fas fa-plus text-xl"></i>
+    </button>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t z-50">
+        <div class="grid grid-cols-4 h-16">
+            <a href="/static/dashboard-mobile.html" class="flex flex-col items-center justify-center text-gray-500">
+                <i class="fas fa-home text-xl"></i>
+                <span class="text-xs">Accueil</span>
+            </a>
+            <a href="/static/partners-list-mobile.html" class="flex flex-col items-center justify-center text-gray-500">
+                <i class="fas fa-users text-xl"></i>
+                <span class="text-xs">Partenaires</span>
+            </a>
+            <a href="/static/visits-mobile.html" class="flex flex-col items-center justify-center text-gray-500">
+                <i class="fas fa-route text-xl"></i>
+                <span class="text-xs">Visites</span>
+            </a>
+            <a href="/static/profile-mobile.html" class="flex flex-col items-center justify-center text-gray-500">
+                <i class="fas fa-user text-xl"></i>
+                <span class="text-xs">Profil</span>
+            </a>
+        </div>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script>
+        const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000' : window.location.origin;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadActions();
+            document.getElementById('filter-status').addEventListener('change', loadActions);
+            document.getElementById('filter-priority').addEventListener('change', loadActions);
+            document.getElementById('add-action-btn').addEventListener('click', () => {
+                alert('Fonctionnalité à venir : Création d\'action');
+            });
+        });
+
+        function checkAuth() {
+            if (!localStorage.getItem('access_token')) window.location.href = '/static/login-mobile.html';
+        }
+
+        async function loadActions() {
+            const container = document.getElementById('actions-container');
+            const loading = document.getElementById('loading');
+            const empty = document.getElementById('empty');
+            
+            container.innerHTML = '';
+            empty.classList.add('hidden');
+            loading.classList.remove('hidden');
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const status = document.getElementById('filter-status').value;
+                const priority = document.getElementById('filter-priority').value;
+                
+                let url = `${API_BASE}/api/v1/actions?`;
+                if (status) url += `status=${status}&`;
+                if (priority) url += `priority=${priority}`;
+                
+                const response = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+                
+                loading.classList.add('hidden');
+                
+                if (response.data.success && response.data.data?.length) {
+                    container.innerHTML = response.data.data.map(renderActionCard).join('');
+                    updateStats(response.data.data);
+                } else {
+                    empty.classList.remove('hidden');
+                }
+            } catch (error) {
+                loading.classList.add('hidden');
+                console.error('Erreur chargement actions:', error);
+                if (error.response?.status === 401) {
+                    localStorage.removeItem('access_token');
+                    window.location.href = '/static/login-mobile.html';
+                }
+            }
+        }
+
+        function renderActionCard(action) {
+            const priorityColors = {
+                urgent: 'border-red-500 bg-red-50',
+                high: 'border-orange-500 bg-orange-50',
+                medium: 'border-yellow-500 bg-yellow-50',
+                low: 'border-blue-500 bg-blue-50'
+            };
+            const priorityLabels = { urgent: 'Urgent', high: 'Haute', medium: 'Moyenne', low: 'Basse' };
+            const statusColors = {
+                open: 'bg-blue-100 text-blue-800',
+                in_progress: 'bg-yellow-100 text-yellow-800',
+                completed: 'bg-green-100 text-green-800',
+                cancelled: 'bg-gray-100 text-gray-800'
+            };
+            const statusLabels = { open: 'Ouverte', in_progress: 'En cours', completed: 'Complétée', cancelled: 'Annulée' };
+            
+            return `
+                <div class="bg-white rounded-lg shadow-md p-4 border-l-4 ${priorityColors[action.priority] || priorityColors.medium}">
+                    <div class="flex items-start justify-between mb-2">
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-900 mb-1">${action.title}</h3>
+                            <p class="text-sm text-gray-600">${action.description || 'Pas de description'}</p>
+                        </div>
+                        <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColors[action.status] || statusColors.open}">
+                            ${statusLabels[action.status] || 'Inconnu'}
+                        </span>
+                    </div>
+                    <div class="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                        <span><i class="fas fa-flag mr-1"></i>${priorityLabels[action.priority] || 'N/A'}</span>
+                        <span><i class="fas fa-calendar mr-1"></i>${action.due_date ? formatDate(action.due_date) : 'Pas d\'échéance'}</span>
+                    </div>
+                    ${action.partner ? `<p class="text-sm text-gray-600 mb-2"><i class="fas fa-building mr-1"></i>${action.partner.name}</p>` : ''}
+                    <div class="flex items-center space-x-2">
+                        ${action.status !== 'completed' ? `<button onclick="markCompleted('${action.id}')" class="flex-1 bg-green-500 text-white px-3 py-2 rounded-lg text-sm"><i class="fas fa-check mr-1"></i>Marquer complétée</button>` : ''}
+                        <button onclick="viewAction('${action.id}')" class="px-3 py-2 border border-gray-300 rounded-lg text-sm"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function markCompleted(actionId) {
+            try {
+                const token = localStorage.getItem('access_token');
+                await axios.patch(`${API_BASE}/api/v1/actions/${actionId}`, { status: 'completed' }, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                showAlert('Action marquée comme complétée !', 'success');
+                loadActions();
+            } catch (error) {
+                console.error('Erreur:', error);
+                showAlert('Erreur lors de la mise à jour', 'error');
+            }
+        }
+
+        function viewAction(actionId) {
+            alert('Détail action à venir');
+        }
+
+        function updateStats(actions) {
+            const stats = actions.reduce((acc, a) => {
+                if (a.priority === 'urgent') acc.urgent++;
+                if (a.status === 'open') acc.open++;
+                if (a.status === 'completed') acc.completed++;
+                return acc;
+            }, { urgent: 0, open: 0, completed: 0 });
+            
+            document.getElementById('stat-urgent').textContent = stats.urgent;
+            document.getElementById('stat-open').textContent = stats.open;
+            document.getElementById('stat-completed').textContent = stats.completed;
+        }
+
+        function formatDate(date) {
+            return date ? new Date(date).toLocaleDateString('fr-FR') : 'N/A';
+        }
+
+        function showAlert(message, type = 'info') {
+            const colors = { success: 'bg-green-500', error: 'bg-red-500', info: 'bg-blue-500' };
+            const div = document.createElement('div');
+            div.className = `fixed top-20 left-4 right-4 ${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg z-50`;
+            div.innerHTML = `<span>${message}</span>`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Mon Dashboard - NeoImpact Animation</title>
+    
+    <!-- NeoImpact UI CSS -->
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+    
+    <!-- External CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    
+    <style>
+        :root {
+            --wafa-primary: #00A5A8;
+            --wafa-accent: #FFD600;
+            --wafa-success: #4CAF50;
+            --wafa-warning: #FFC107;
+            --wafa-danger: #F44336;
+        }
+        
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--wafa-primary) 0%, #008B8E 100%);
+            box-shadow: 0 4px 20px rgba(0, 165, 168, 0.3);
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--wafa-primary);
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 165, 168, 0.2);
+        }
+        
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(var(--wafa-accent) 0% 85%, #E0E0E0 85% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #000;
+            position: relative;
+        }
+        
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            width: 90px;
+            height: 90px;
+            background: white;
+            border-radius: 50%;
+            z-index: 1;
+        }
+        
+        .score-circle span {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .lead-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 12px;
+            border-left: 4px solid var(--wafa-primary);
+            transition: all 0.3s ease;
+        }
+        
+        .lead-card:hover {
+            box-shadow: 0 4px 16px rgba(0, 165, 168, 0.15);
+            transform: translateX(4px);
+        }
+        
+        .reward-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, var(--wafa-accent), #FFE033);
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            box-shadow: 0 2px 8px rgba(255, 214, 0, 0.3);
+        }
+        
+        .route-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--wafa-primary);
+        }
+        
+        .daily-target {
+            background: linear-gradient(135deg, #4CAF50, #66BB6A);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+        
+        .btn-action {
+            background: var(--wafa-accent);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-action:hover {
+            background: #FFE033;
+            box-shadow: 0 4px 12px rgba(255, 214, 0, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header avec Logo NeoImpact -->
+    <header class="dashboard-header text-white py-6 px-8 mb-8">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <!-- Logo NeoImpact -->
+                <div class="neoimpact-logo">
+                    <div class="logo-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <div class="logo-arabic">وفاسلف</div>
+                        <div class="logo-latin">NeoImpact</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h1 class="text-3xl font-bold flex items-center gap-3">
+                        <i class="fas fa-user-tie"></i>
+                        Mon Dashboard Animator
+                    </h1>
+                    <p class="text-blue-100 mt-1">Bonjour Amina ! 🎯 Objectif du jour : 8 visites</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <span class="reward-badge">
+                    <i class="fas fa-star"></i>
+                    850 points • Niveau 4
+                </span>
+                <button onclick="refreshData()" class="btn-action">
+                    <i class="fas fa-sync-alt"></i> Actualiser
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-8 pb-12">
+        <!-- Objectif Journalier -->
+        <div class="daily-target">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-2xl font-bold mb-2">Objectif du Jour</h2>
+                    <p class="text-green-100">5 visites complétées sur 8 • Reste 3h avant fin de journée</p>
+                    <div class="mt-4 bg-white bg-opacity-20 rounded-full h-3 overflow-hidden">
+                        <div class="bg-white h-full rounded-full" style="width: 62.5%;"></div>
+                    </div>
+                </div>
+                <div class="score-circle">
+                    <span>85/100</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPIs Personnels -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="kpi-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-3xl font-bold" style="color: var(--wafa-primary);">35</div>
+                        <div class="text-sm text-gray-600 mt-1">Visites ce Mois</div>
+                        <div class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-arrow-up"></i> +8 vs mois dernier
+                        </div>
+                    </div>
+                    <i class="fas fa-route text-4xl" style="color: var(--wafa-primary); opacity: 0.2;"></i>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-3xl font-bold" style="color: var(--wafa-primary);">12</div>
+                        <div class="text-sm text-gray-600 mt-1">Conversions</div>
+                        <div class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-arrow-up"></i> +4 vs mois dernier
+                        </div>
+                    </div>
+                    <i class="fas fa-check-circle text-4xl" style="color: var(--wafa-success); opacity: 0.3;"></i>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-3xl font-bold" style="color: var(--wafa-primary);">34%</div>
+                        <div class="text-sm text-gray-600 mt-1">Taux Conversion</div>
+                        <div class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-arrow-up"></i> +5pts vs moyenne
+                        </div>
+                    </div>
+                    <i class="fas fa-percentage text-4xl" style="color: var(--wafa-primary); opacity: 0.2;"></i>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-3xl font-bold" style="color: var(--wafa-accent);">850</div>
+                        <div class="text-sm text-gray-600 mt-1">Points Gamification</div>
+                        <div class="text-xs" style="color: var(--wafa-accent);">
+                            <i class="fas fa-trophy"></i> Top 3 Région
+                        </div>
+                    </div>
+                    <i class="fas fa-star text-4xl" style="color: var(--wafa-accent); opacity: 0.3;"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leads Prioritaires IA -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <div class="bg-white rounded-2xl p-6 shadow-lg">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-robot" style="color: var(--wafa-primary);"></i>
+                    Leads Prioritaires (IA)
+                </h2>
+                <p class="text-sm text-gray-600 mb-4">
+                    Clients sélectionnés par l'IA avec <strong>probabilité conversion &gt;70%</strong>
+                </p>
+
+                <div id="priority-leads">
+                    <div class="lead-card">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <strong class="text-lg">Entreprise Al Manar SARL</strong>
+                                <div class="text-sm text-gray-600">Contact: Hassan Brahim • 0612-345-678</div>
+                            </div>
+                            <span class="badge badge-success">Score IA: 87%</span>
+                        </div>
+                        <div class="text-sm text-gray-700 mb-3">
+                            <i class="fas fa-map-marker-alt text-cyan-600"></i> 
+                            Rue Mohamed V, Casablanca • 2,3 km
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="btn-action" style="font-size: 0.875rem; padding: 8px 16px;">
+                                <i class="fas fa-phone"></i> Appeler
+                            </button>
+                            <button class="btn-action" style="font-size: 0.875rem; padding: 8px 16px; background: var(--wafa-primary); color: white;">
+                                <i class="fas fa-route"></i> Itinéraire
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="lead-card">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <strong class="text-lg">Café Anfa</strong>
+                                <div class="text-sm text-gray-600">Contact: Fatima Zahra • 0623-456-789</div>
+                            </div>
+                            <span class="badge badge-success">Score IA: 82%</span>
+                        </div>
+                        <div class="text-sm text-gray-700 mb-3">
+                            <i class="fas fa-map-marker-alt text-cyan-600"></i> 
+                            Boulevard Anfa, Casablanca • 3,1 km
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="btn-action" style="font-size: 0.875rem; padding: 8px 16px;">
+                                <i class="fas fa-phone"></i> Appeler
+                            </button>
+                            <button class="btn-action" style="font-size: 0.875rem; padding: 8px 16px; background: var(--wafa-primary); color: white;">
+                                <i class="fas fa-route"></i> Itinéraire
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="lead-card">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <strong class="text-lg">Pharmacie Essalam</strong>
+                                <div class="text-sm text-gray-600">Contact: Mehdi Alaoui • 0634-567-890</div>
+                            </div>
+                            <span class="badge badge-info">Score IA: 75%</span>
+                        </div>
+                        <div class="text-sm text-gray-700 mb-3">
+                            <i class="fas fa-map-marker-alt text-cyan-600"></i> 
+                            Quartier Maarif, Casablanca • 4,5 km
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="btn-action" style="font-size: 0.875rem; padding: 8px 16px;">
+                                <i class="fas fa-phone"></i> Appeler
+                            </button>
+                            <button class="btn-action" style="font-size: 0.875rem; padding: 8px 16px; background: var(--wafa-primary); color: white;">
+                                <i class="fas fa-route"></i> Itinéraire
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prochaines Récompenses -->
+            <div class="bg-white rounded-2xl p-6 shadow-lg">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-gift" style="color: var(--wafa-accent);"></i>
+                    Prochaines Récompenses
+                </h2>
+                <p class="text-sm text-gray-600 mb-4">
+                    Continue comme ça ! 🎯 Tu débloques bientôt :
+                </p>
+
+                <div class="space-y-4">
+                    <div class="p-4 bg-yellow-50 rounded-lg border-2 border-yellow-200">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="text-3xl">🏆</div>
+                            <div>
+                                <strong class="text-lg">Badge "Top Performer"</strong>
+                                <div class="text-sm text-gray-600">Reste 50 points</div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-200 rounded-full h-2 overflow-hidden">
+                            <div class="bg-yellow-500 h-full rounded-full" style="width: 94%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-cyan-50 rounded-lg border-2 border-cyan-200">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="text-3xl">⭐</div>
+                            <div>
+                                <strong class="text-lg">Niveau 5 "Expert"</strong>
+                                <div class="text-sm text-gray-600">Reste 150 points</div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-200 rounded-full h-2 overflow-hidden">
+                            <div class="bg-cyan-500 h-full rounded-full" style="width: 85%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-green-50 rounded-lg border-2 border-green-200">
+                        <div class="flex items-center gap-3">
+                            <div class="text-3xl">🎁</div>
+                            <div>
+                                <strong class="text-lg">Bonus Commission +10%</strong>
+                                <div class="text-sm text-gray-600">Atteindre 15 conversions ce mois</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Itinéraire GPS Optimisé -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg mb-8">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-map-marked-alt" style="color: var(--wafa-primary);"></i>
+                Itinéraire Optimisé du Jour
+            </h2>
+            <p class="text-sm text-gray-600 mb-4">
+                Route optimisée par IA • <strong>18,4 km total</strong> • Économie carburant : <strong>~15 MAD</strong>
+            </p>
+
+            <div id="route-list" class="space-y-3">
+                <div class="route-card">
+                    <div class="flex items-center gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center font-bold" style="color: var(--wafa-primary);">
+                            1
+                        </div>
+                        <div class="flex-1">
+                            <strong>Entreprise Al Manar SARL</strong>
+                            <div class="text-sm text-gray-600">Rue Mohamed V • 2,3 km • 09h00-09h30</div>
+                        </div>
+                        <span class="badge badge-success">Score IA: 87%</span>
+                    </div>
+                </div>
+
+                <div class="route-card">
+                    <div class="flex items-center gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center font-bold" style="color: var(--wafa-primary);">
+                            2
+                        </div>
+                        <div class="flex-1">
+                            <strong>Café Anfa</strong>
+                            <div class="text-sm text-gray-600">Boulevard Anfa • 3,1 km • 10h00-10h30</div>
+                        </div>
+                        <span class="badge badge-success">Score IA: 82%</span>
+                    </div>
+                </div>
+
+                <div class="route-card">
+                    <div class="flex items-center gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center font-bold" style="color: var(--wafa-primary);">
+                            3
+                        </div>
+                        <div class="flex-1">
+                            <strong>Pharmacie Essalam</strong>
+                            <div class="text-sm text-gray-600">Quartier Maarif • 4,5 km • 11h00-11h30</div>
+                        </div>
+                        <span class="badge badge-info">Score IA: 75%</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-action mt-4 w-full justify-center" style="padding: 16px;">
+                <i class="fas fa-play"></i>
+                Démarrer l'itinéraire GPS
+            </button>
+        </div>
+
+        <!-- Graphiques Performance -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-white rounded-2xl p-6 shadow-lg">
+                <h2 class="text-xl font-bold mb-4">Mes Conversions (30j)</h2>
+                <canvas id="conversionsChart" height="250"></canvas>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-lg">
+                <h2 class="text-xl font-bold mb-4">Mes Points Gamification</h2>
+                <canvas id="pointsChart" height="250"></canvas>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Configuration API
+        const API_BASE = window.location.origin;
+        const USER_ID = localStorage.getItem('user_id') || 'demo-user';
+
+        // Refresh des données
+        async function refreshData() {
+            try {
+                const response = await axios.get(`${API_BASE}/api/analytics/animator/personal/${USER_ID}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                    }
+                });
+                
+                const data = response.data;
+                console.log('Dashboard data:', data);
+                
+            } catch (error) {
+                console.error('Erreur refresh:', error);
+            }
+        }
+
+        // Initialisation des graphiques
+        function initCharts() {
+            // Graphique conversions
+            const conversionsCtx = document.getElementById('conversionsChart');
+            if (conversionsCtx) {
+                new Chart(conversionsCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+                        datasets: [{
+                            label: 'Conversions',
+                            data: [2, 3, 4, 3],
+                            borderColor: '#00A5A8',
+                            backgroundColor: 'rgba(0, 165, 168, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+
+            // Graphique points
+            const pointsCtx = document.getElementById('pointsChart');
+            if (pointsCtx) {
+                new Chart(pointsCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+                        datasets: [{
+                            label: 'Points',
+                            data: [180, 210, 235, 225],
+                            backgroundColor: '#FFD600'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshData();
+            initCharts();
+            
+            // Auto-refresh toutes les 5 minutes
+            setInterval(refreshData, 300000);
+        });
+    </script>
+</body>
+</html>

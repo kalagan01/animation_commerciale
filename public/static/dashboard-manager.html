@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Dashboard Manager - NeoImpact Animation</title>
+    
+    <!-- NeoImpact UI CSS -->
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+    
+    <!-- External CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    
+    <style>
+        :root {
+            --wafa-primary: #00A5A8;
+            --wafa-accent: #FFD600;
+            --wafa-success: #4CAF50;
+            --wafa-warning: #FFC107;
+            --wafa-danger: #F44336;
+        }
+        
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--wafa-primary) 0%, #008B8E 100%);
+            box-shadow: 0 4px 20px rgba(0, 165, 168, 0.3);
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--wafa-primary);
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 165, 168, 0.2);
+        }
+        
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--wafa-primary);
+            line-height: 1.2;
+        }
+        
+        .kpi-label {
+            color: #6B6B6B;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-top: 24px;
+        }
+        
+        .team-member {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        
+        .team-member:hover {
+            box-shadow: 0 4px 16px rgba(0, 165, 168, 0.15);
+            transform: translateX(4px);
+        }
+        
+        .avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--wafa-primary), var(--wafa-accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-right: 16px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #E0E0E0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--wafa-primary), var(--wafa-accent));
+            transition: width 0.6s ease;
+        }
+        
+        .alert-box {
+            background: #FFF3CD;
+            border-left: 4px solid var(--wafa-warning);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .btn-primary {
+            background: var(--wafa-accent);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #FFE033;
+            box-shadow: 0 4px 12px rgba(255, 214, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header avec Logo NeoImpact -->
+    <header class="dashboard-header text-white py-6 px-8 mb-8">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <!-- Logo NeoImpact -->
+                <div class="neoimpact-logo">
+                    <div class="logo-icon">
+                        <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <div class="logo-arabic">وفاسلف</div>
+                        <div class="logo-latin">NeoImpact</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h1 class="text-3xl font-bold flex items-center gap-3">
+                        <i class="fas fa-users-cog"></i>
+                        Dashboard Manager Régional
+                    </h1>
+                    <p class="text-blue-100 mt-1">Pilotage Équipe & Territoire</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <span class="text-sm opacity-90" id="lastUpdate">Dernière mise à jour : --:--</span>
+                <button onclick="refreshData()" class="btn-primary">
+                    <i class="fas fa-sync-alt mr-2"></i> Actualiser
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-8 pb-12">
+        <!-- Alertes Prioritaires -->
+        <div id="alerts-section" class="mb-6">
+            <div class="alert-box">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
+                    <div>
+                        <strong>3 animateurs</strong> en baisse de performance (-20% vs semaine dernière)
+                        <button class="ml-4 text-sm underline">Voir détails</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPIs Équipe -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="kpi-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="kpi-value" id="teamSize">12</div>
+                        <div class="kpi-label">Animateurs Actifs</div>
+                        <div class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-arrow-up"></i> +2 ce mois
+                        </div>
+                    </div>
+                    <i class="fas fa-users text-4xl" style="color: var(--wafa-primary); opacity: 0.2;"></i>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="kpi-value" id="teamPerformance">87%</div>
+                        <div class="kpi-label">Performance vs Objectif</div>
+                        <div class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-arrow-up"></i> +5% vs mois dernier
+                        </div>
+                    </div>
+                    <i class="fas fa-chart-line text-4xl" style="color: var(--wafa-primary); opacity: 0.2;"></i>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="kpi-value" id="territoryVisits">248</div>
+                        <div class="kpi-label">Visites Cette Semaine</div>
+                        <div class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-arrow-up"></i> +12% vs moyenne
+                        </div>
+                    </div>
+                    <i class="fas fa-map-marked-alt text-4xl" style="color: var(--wafa-primary); opacity: 0.2;"></i>
+                </div>
+            </div>
+
+            <div class="kpi-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="kpi-value" id="avgConversion">23%</div>
+                        <div class="kpi-label">Taux Conversion Moyen</div>
+                        <div class="text-xs text-green-600 mt-1">
+                            <i class="fas fa-arrow-up"></i> +3pts vs trimestre
+                        </div>
+                    </div>
+                    <i class="fas fa-percentage text-4xl" style="color: var(--wafa-primary); opacity: 0.2;"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Équipe -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Top Performers -->
+            <div class="chart-container">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-trophy" style="color: var(--wafa-accent);"></i>
+                    Top 5 Performers
+                </h2>
+                
+                <div id="top-performers-list">
+                    <!-- Exemple de membre d'équipe -->
+                    <div class="team-member">
+                        <div class="avatar">AM</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-1">
+                                <strong>Amina Mansouri</strong>
+                                <span class="badge badge-success">120% objectif</span>
+                            </div>
+                            <div class="text-sm text-gray-600">35 visites • 12 conversions • 8,2/10</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 92%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="avatar">YB</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-1">
+                                <strong>Youssef Benali</strong>
+                                <span class="badge badge-success">115% objectif</span>
+                            </div>
+                            <div class="text-sm text-gray-600">32 visites • 11 conversions • 8,0/10</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 88%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="avatar">SK</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-1">
+                                <strong>Sara Khalil</strong>
+                                <span class="badge badge-info">105% objectif</span>
+                            </div>
+                            <div class="text-sm text-gray-600">28 visites • 9 conversions • 7,5/10</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 82%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="avatar">MA</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-1">
+                                <strong>Mohammed Alami</strong>
+                                <span class="badge badge-info">98% objectif</span>
+                            </div>
+                            <div class="text-sm text-gray-600">25 visites • 8 conversions • 7,2/10</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="avatar">LZ</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-1">
+                                <strong>Laila Zahiri</strong>
+                                <span class="badge badge-warning">92% objectif</span>
+                            </div>
+                            <div class="text-sm text-gray-600">22 visites • 7 conversions • 6,8/10</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 70%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heat Map Territoire -->
+            <div class="chart-container">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-map" style="color: var(--wafa-primary);"></i>
+                    Carte de Chaleur Territoire
+                </h2>
+                <canvas id="territoryHeatmap" height="300"></canvas>
+                <div class="mt-4 text-sm text-gray-600">
+                    <i class="fas fa-info-circle"></i> 
+                    Zones rouges = forte densité de visites • Zones bleues = opportunités inexploitées
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphiques Performance -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+            <div class="chart-container">
+                <h2 class="text-xl font-bold mb-4">Évolution Visites Équipe (30j)</h2>
+                <canvas id="visitsChart" height="250"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h2 class="text-xl font-bold mb-4">Taux Conversion par Animator</h2>
+                <canvas id="conversionChart" height="250"></canvas>
+            </div>
+        </div>
+
+        <!-- Recommandations IA -->
+        <div class="chart-container mt-8">
+            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-robot" style="color: var(--wafa-primary);"></i>
+                Recommandations IA (Coach Virtuel)
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                    <div class="font-bold text-blue-800 mb-2">
+                        <i class="fas fa-user-clock"></i> Amina Mansouri
+                    </div>
+                    <p class="text-sm text-blue-700">
+                        Planifier formation "Objection Handling" pour maintenir sa dynamique exceptionnelle
+                    </p>
+                </div>
+
+                <div class="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded">
+                    <div class="font-bold text-yellow-800 mb-2">
+                        <i class="fas fa-exclamation-triangle"></i> 3 animateurs
+                    </div>
+                    <p class="text-sm text-yellow-700">
+                        Taux visite < 15/semaine. Recommandé : coaching terrain + révision itinéraires GPS
+                    </p>
+                </div>
+
+                <div class="p-4 bg-green-50 border-l-4 border-green-500 rounded">
+                    <div class="font-bold text-green-800 mb-2">
+                        <i class="fas fa-map-marker-alt"></i> Zone Nord
+                    </div>
+                    <p class="text-sm text-green-700">
+                        Opportunité : +40 leads non visités. Allouer 2 animateurs supplémentaires cette semaine
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Configuration API
+        const API_BASE = window.location.origin;
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+        // Refresh des données
+        async function refreshData() {
+            document.getElementById('lastUpdate').textContent = 
+                `Dernière mise à jour : ${new Date().toLocaleTimeString('fr-FR')}`;
+            
+            try {
+                // Appel API Analytics
+                const response = await axios.get(`${API_BASE}/api/analytics/manager/overview`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                    }
+                });
+                
+                const data = response.data;
+                
+                // Mise à jour KPIs
+                document.getElementById('teamSize').textContent = data.team_size || 12;
+                document.getElementById('teamPerformance').textContent = 
+                    `${Math.round(data.team_performance * 100)}%`;
+                document.getElementById('territoryVisits').textContent = data.total_visits || 248;
+                document.getElementById('avgConversion').textContent = 
+                    `${Math.round(data.avg_conversion_rate * 100)}%`;
+                
+            } catch (error) {
+                console.error('Erreur refresh:', error);
+            }
+        }
+
+        // Initialisation des graphiques
+        function initCharts() {
+            // Graphique visites
+            const visitsCtx = document.getElementById('visitsChart');
+            if (visitsCtx) {
+                new Chart(visitsCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4'],
+                        datasets: [{
+                            label: 'Visites Totales',
+                            data: [180, 210, 235, 248],
+                            borderColor: '#00A5A8',
+                            backgroundColor: 'rgba(0, 165, 168, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+
+            // Graphique conversion
+            const conversionCtx = document.getElementById('conversionChart');
+            if (conversionCtx) {
+                new Chart(conversionCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Amina', 'Youssef', 'Sara', 'Mohammed', 'Laila'],
+                        datasets: [{
+                            label: 'Taux Conversion (%)',
+                            data: [34, 34, 32, 32, 32],
+                            backgroundColor: '#FFD600'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshData();
+            initCharts();
+            
+            // Auto-refresh toutes les 2 minutes
+            setInterval(refreshData, 120000);
+        });
+    </script>
+</body>
+</html>

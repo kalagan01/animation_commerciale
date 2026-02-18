@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Profil - NeoImpact</title>
+    <link href="/css/neoimpact-design-system.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #F5F5F5;
+            padding-bottom: 80px;
+        }
+
+        /* Header with Profile Banner */
+        .profile-header {
+            background: linear-gradient(135deg, #0097A7 0%, #00BCD4 100%);
+            color: white;
+            padding: 20px 20px 60px;
+            position: relative;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-icon {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-info {
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            background: white;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--color-primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        .avatar-edit {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #FFD600;
+            border: 3px solid white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--color-dark);
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .profile-role {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Stats Card */
+        .stats-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin: -40px 20px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--color-dark);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        /* Content */
+        .content {
+            padding: 0 20px;
+        }
+
+        /* Section */
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+        }
+
+        /* Menu Item */
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--color-border-light);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item:active {
+            background: #F5F5F5;
+        }
+
+        .menu-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .menu-icon.primary {
+            background: #E0F7FA;
+            color: var(--color-primary);
+        }
+
+        .menu-icon.success {
+            background: #E8F5E9;
+            color: var(--color-success);
+        }
+
+        .menu-icon.warning {
+            background: #FFF9C4;
+            color: var(--color-warning);
+        }
+
+        .menu-icon.info {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+
+        .menu-icon.danger {
+            background: #FFEBEE;
+            color: var(--color-danger);
+        }
+
+        .menu-content {
+            flex: 1;
+        }
+
+        .menu-label {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--color-dark);
+            margin-bottom: 2px;
+        }
+
+        .menu-subtitle {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+        }
+
+        .menu-arrow {
+            color: var(--color-text-disabled);
+            font-size: 16px;
+        }
+
+        .menu-badge {
+            background: var(--color-danger);
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        /* Logout Button */
+        .logout-section {
+            padding: 20px;
+        }
+
+        .btn-logout {
+            width: 100%;
+            background: white;
+            border: 2px solid var(--color-danger);
+            color: var(--color-danger);
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout:active {
+            background: var(--color-danger);
+            color: white;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--color-border-light);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            text-decoration: none;
+            color: var(--color-text-secondary);
+            font-size: 11px;
+            padding: 8px;
+            transition: all 0.2s ease;
+            gap: 4px;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+        }
+
+        .nav-item.active {
+            color: var(--color-primary);
+        }
+    </style>
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body>
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="header-actions">
+            <button class="back-btn" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <button class="header-icon">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+        <div class="profile-info">
+            <div class="profile-avatar">
+                AA
+                <div class="avatar-edit">
+                    <i class="fas fa-camera"></i>
+                </div>
+            </div>
+            <div class="profile-name" id="userName">Ahmed Alami</div>
+            <div class="profile-role" id="userRole">Agent Commercial</div>
+        </div>
+    </div>
+
+    <!-- Stats Card -->
+    <div class="stats-card">
+        <div class="stat-item">
+            <div class="stat-value" id="statDossiers">12</div>
+            <div class="stat-label">Dossiers</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="statApprouves">8</div>
+            <div class="stat-label">Approuvés</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value" id="statTaux">85%</div>
+            <div class="stat-label">Taux</div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <!-- Account Section -->
+        <div class="section">
+            <div class="section-title">Compte</div>
+            <a href="/profile/edit" class="menu-item">
+                <div class="menu-icon primary">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="menu-content">
+                    <div class="menu-label">Informations personnelles</div>
+                    <div class="menu-subtitle">Nom, email, téléphone</div>
+                </div>
+                <i class="fas fa-chevron-right menu-arrow"></i>
+            </a>
+            <a href="/profile/security" class="menu-item">
+                <div class="menu-icon success">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <div class="menu-content">
+                    <div class="menu-label">Sécurité</div>
+                    <div class="menu-subtitle">Mot de passe, authentification</div>
+                </div>
+                <i class="fas fa-chevron-right menu-arrow"></i>
+            </a>
+            <a href="/profile/notifications" class="menu-item">
+                <div class="menu-icon warning">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div class="menu-content">
+                    <div class="menu-label">Notifications</div>
+                    <div class="menu-subtitle">Gérer les alertes</div>
+                </div>
+                <span class="menu-badge">3</span>
+                <i class="fas fa-chevron-right menu-arrow"></i>
+            </a>
+        </div>
+
+        <!-- Performance Section -->
+        <div class="section">
+            <div class="section-title">Performance</div>
+            <a href="/profile/statistics" class="menu-item">
+                <div class="menu-icon info">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="menu-content">
+                    <div class="menu-label">Mes statistiques</div>
+                    <div class="menu-subtitle">Performance mensuelle</div>
+                </div>
+                <i class="fas fa-chevron-right menu-arrow"></i>
+            </a>
+            <a href="/profile/objectives" class="menu-item">
+                <div class="menu-icon success">
+                    <i class="fas fa-bullseye"></i>
+                </div>
+                <div class="menu-content">
+                    <div class="menu-label">Objectifs</div>
+                    <div class="menu-subtitle">8/10 objectifs atteints</div>
+                </div>
+                <i class="fas fa-chevron-right menu-arrow"></i>
+            </a>
+            <a href="/profile/commission" class="menu-item">
+                <div class="menu-icon primary">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="menu-content">
+                    <div class="menu-label">Commissions</div>
+                    <div class="menu-subtitle">12,500 MAD ce mois</div>
+                </div>
+                <i class="fas fa-chevron-right menu-arrow"></i>
+            </a>
+        </div>
+
+        <!-- Support Section -->
+        <div class="section">
+            <div class="section-title">Support</div>
+            <a href="/help" class="menu-item">
+                <div class="menu-icon info">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <div class="menu-content">
+                    <div class="menu-label">Centre d'aide</div>
+                    <div class="menu-subtitle">FAQ et guides</div>
+                </div>
+                <i class="fas fa-chevron-right menu-arrow"></i>
+            </a>
+            <a href="/contact" class="menu-item">
+                <div class="menu-icon primary">
+                    <i class="fas fa-headset"></i>
+                </div>
+                <div class="menu-content">
+                    <div class="menu-label">Contacter le support</div>
+                    <div class="menu-subtitle">Assistance technique</div>
+                </div>
+                <i class="fas fa-chevron-right menu-arrow"></i>
+            </a>
+            <a href="/about" class="menu-item">
+                <div class="menu-icon info">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <div class="menu-content">
+                    <div class="menu-label">À propos</div>
+                    <div class="menu-subtitle">Version 1.0.0</div>
+                </div>
+                <i class="fas fa-chevron-right menu-arrow"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Logout Section -->
+    <div class="logout-section">
+        <button class="btn-logout" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i>
+            Se déconnecter
+        </button>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="/dashboard-mobile.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
+        </a>
+        <a href="/dossiers-mobile.html" class="nav-item">
+            <i class="fas fa-folder"></i>
+            <span>Dossiers</span>
+        </a>
+        <a href="/simulation-mobile.html" class="nav-item">
+            <i class="fas fa-calculator"></i>
+            <span>Simulation</span>
+        </a>
+        <a href="/statistics-mobile.html" class="nav-item">
+            <i class="fas fa-chart-bar"></i>
+            <span>Stats</span>
+        </a>
+        <a href="/profil-mobile.html" class="nav-item active">
+            <i class="fas fa-user"></i>
+            <span>Profil</span>
+        </a>
+    </div>
+
+    <script>
+        // Load user profile
+        async function loadUserProfile() {
+            try {
+                const response = await fetch('/api/v1/auth/me', {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.user) {
+                        document.getElementById('userName').textContent = data.user.name;
+                        document.getElementById('userRole').textContent = data.user.role || 'Agent Commercial';
+                        
+                        const initials = data.user.name.split(' ').map(n => n[0]).join('').substring(0, 2);
+                        document.querySelector('.profile-avatar').textContent = initials;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+            }
+        }
+
+        // Logout function
+        async function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                try {
+                    const response = await fetch('/api/v1/auth/logout', {
+                        method: 'POST',
+                        credentials: 'include'
+                    });
+
+                    if (response.ok) {
+                        window.location.href = '/login-mobile.html';
+                    }
+                } catch (error) {
+                    console.error('Error logging out:', error);
+                    // Fallback: redirect anyway
+                    window.location.href = '/login-mobile.html';
+                }
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserProfile();
+        });
+    </script>
+</body>
+</html>

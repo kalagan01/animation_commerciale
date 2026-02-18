@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Gamification - NeoImpact Animation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <style>
+        /* Animations personnalisées */
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(59, 130, 246, 0.8); }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes slide-in {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes badge-unlock {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1) rotate(0); opacity: 1; }
+        }
+        
+        .badge-common { background: linear-gradient(135deg, #94a3b8, #cbd5e1); }
+        .badge-rare { background: linear-gradient(135deg, #3b82f6, #60a5fa); }
+        .badge-epic { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
+        .badge-legendary { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+        
+        .level-badge {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            animation: pulse-glow 2s infinite;
+        }
+        
+        .leaderboard-top1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+        .leaderboard-top2 { background: linear-gradient(135deg, #cbd5e1, #94a3b8); }
+        .leaderboard-top3 { background: linear-gradient(135deg, #d97706, #b45309); }
+        
+        .slide-in { animation: slide-in 0.5s ease-out; }
+        .float { animation: float 3s ease-in-out infinite; }
+        
+        .progress-bar {
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .tab-active {
+            border-bottom: 3px solid #3b82f6;
+            color: #3b82f6;
+        }
+    </style>
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body class="bg-gray-50">
+    
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+<!-- Logo NeoImpact -->
+                <div class="neoimpact-logo" style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
+                    <div class="logo-icon">
+                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="line-height: 1.2;">
+                        <div class="logo-arabic" style="font-size: 14px; font-weight: 600; color: #00A5A8;">وفاسلف</div>
+                        <div class="logo-latin" style="font-size: 10px; color: #6B6B6B; letter-spacing: 1px;">NeoImpact</div>
+                    </div>
+                </div>
+
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <h1 class="text-2xl font-bold text-gray-900">
+                        🎮 Gamification
+                    </h1>
+                </div>
+                
+                <!-- User Level Badge -->
+                <div id="user-level-badge" class="level-badge text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg">
+                    <i class="fas fa-trophy mr-1"></i>
+                    <span id="user-level">Bronze</span> • <span id="user-points">0</span> pts
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <!-- Tabs Navigation -->
+    <div class="bg-white border-b sticky top-16 z-40">
+        <div class="max-w-7xl mx-auto px-4">
+            <nav class="flex space-x-8">
+                <button class="tab-button tab-active py-4 px-2 font-medium" data-tab="profile">
+                    <i class="fas fa-user mr-2"></i>Mon Profil
+                </button>
+                <button class="tab-button py-4 px-2 font-medium text-gray-600" data-tab="leaderboard">
+                    <i class="fas fa-trophy mr-2"></i>Classement
+                </button>
+                <button class="tab-button py-4 px-2 font-medium text-gray-600" data-tab="badges">
+                    <i class="fas fa-award mr-2"></i>Badges
+                </button>
+                <button class="tab-button py-4 px-2 font-medium text-gray-600" data-tab="challenges">
+                    <i class="fas fa-target mr-2"></i>Challenges
+                </button>
+            </nav>
+        </div>
+    </div>
+    
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        
+        <!-- TAB: Mon Profil -->
+        <div id="tab-profile" class="tab-content">
+            
+            <!-- User Stats Overview -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-md slide-in">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm mb-1">Total Points</p>
+                            <p class="text-3xl font-bold text-[#00A5A8]" id="stat-total-points">0</p>
+                        </div>
+                        <div class="text-4xl float">🎯</div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-md slide-in" style="animation-delay: 0.1s">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm mb-1">Badges Débloqués</p>
+                            <p class="text-3xl font-bold text-purple-600" id="stat-badges-count">0</p>
+                        </div>
+                        <div class="text-4xl float">🏅</div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-md slide-in" style="animation-delay: 0.2s">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm mb-1">Série Active</p>
+                            <p class="text-3xl font-bold text-orange-600" id="stat-streak-days">0</p>
+                        </div>
+                        <div class="text-4xl float">🔥</div>
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-md slide-in" style="animation-delay: 0.3s">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-sm mb-1">Classement</p>
+                            <p class="text-3xl font-bold text-[#00A5A8]">#<span id="stat-rank">-</span></p>
+                        </div>
+                        <div class="text-4xl float">📊</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Level Progress -->
+            <div class="bg-white p-6 rounded-xl shadow-md mb-8">
+                <h3 class="text-lg font-bold mb-4 flex items-center">
+                    <span class="text-2xl mr-2">⭐</span>
+                    Progression vers niveau suivant
+                </h3>
+                
+                <div class="mb-4">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm font-medium" id="level-current">Bronze</span>
+                        <span class="text-sm text-gray-500"><span id="level-progress-current">0</span> / <span id="level-progress-target">100</span> pts</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
+                        <div class="progress-bar bg-gradient-to-r from-blue-500 to-purple-600 h-4 rounded-full" id="level-progress-bar" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between text-sm">
+                    <div class="flex items-center space-x-2">
+                        <span class="px-3 py-1 bg-gray-100 rounded-full font-medium">Bronze</span>
+                        <span class="text-gray-400">→</span>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">Silver</span>
+                        <span class="text-gray-400">→</span>
+                        <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full font-medium">Gold</span>
+                        <span class="text-gray-400">→</span>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full font-medium">Platinum</span>
+                        <span class="text-gray-400">→</span>
+                        <span class="px-3 py-1 bg-gradient-to-r from-blue-400 to-purple-600 text-white rounded-full font-medium">Diamond</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Activity Charts -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-lg font-bold mb-4">📈 Points par Semaine</h3>
+                    <canvas id="chart-weekly-points"></canvas>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow-md">
+                    <h3 class="text-lg font-bold mb-4">🎯 Actions Réalisées</h3>
+                    <canvas id="chart-actions-breakdown"></canvas>
+                </div>
+            </div>
+            
+            <!-- Recent Activities -->
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-lg font-bold mb-4">🕐 Activité Récente</h3>
+                <div id="recent-activities-list" class="space-y-3">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: Classement -->
+        <div id="tab-leaderboard" class="tab-content hidden">
+            
+            <!-- Period Selector -->
+            <div class="bg-white p-4 rounded-xl shadow-md mb-6">
+                <div class="flex items-center space-x-4">
+                    <span class="font-medium">Période:</span>
+                    <button class="period-button px-4 py-2 rounded-lg bg-[#00A5A8] text-white font-medium" data-period="today">Aujourd'hui</button>
+                    <button class="period-button px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-medium" data-period="week">Cette Semaine</button>
+                    <button class="period-button px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-medium" data-period="month">Ce Mois</button>
+                    <button class="period-button px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-medium" data-period="alltime">Tout Temps</button>
+                </div>
+            </div>
+            
+            <!-- User Rank Card (si pas dans top 10) -->
+            <div id="user-rank-card" class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-xl shadow-lg mb-6 hidden">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="text-4xl font-bold">#<span id="user-rank-position">-</span></div>
+                        <div>
+                            <p class="text-sm opacity-90">Votre Position</p>
+                            <p class="text-lg font-bold" id="user-rank-points">0 points</p>
+                        </div>
+                    </div>
+                    <div class="text-sm opacity-90">
+                        <i class="fas fa-users mr-1"></i>
+                        <span id="user-rank-total">0</span> participants
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Leaderboard -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6 border-b">
+                    <h3 class="text-lg font-bold">🏆 Classement</h3>
+                </div>
+                
+                <div id="leaderboard-list" class="divide-y">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: Badges -->
+        <div id="tab-badges" class="tab-content hidden">
+            
+            <!-- Badges Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white p-4 rounded-xl shadow-md text-center">
+                    <p class="text-3xl font-bold text-gray-600" id="badges-total">0</p>
+                    <p class="text-sm text-gray-500 mt-1">Total Badges</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-md text-center">
+                    <p class="text-3xl font-bold text-[#00A5A8]" id="badges-common">0</p>
+                    <p class="text-sm text-gray-500 mt-1">Communs</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-md text-center">
+                    <p class="text-3xl font-bold text-purple-600" id="badges-rare">0</p>
+                    <p class="text-sm text-gray-500 mt-1">Rares</p>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-md text-center">
+                    <p class="text-3xl font-bold text-yellow-600" id="badges-legendary">0</p>
+                    <p class="text-sm text-gray-500 mt-1">Légendaires</p>
+                </div>
+            </div>
+            
+            <!-- Badges Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6" id="badges-grid">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+        
+        <!-- TAB: Challenges -->
+        <div id="tab-challenges" class="tab-content hidden">
+            
+            <!-- Active Challenges -->
+            <div class="mb-8">
+                <h3 class="text-xl font-bold mb-4">🎯 Challenges Actifs</h3>
+                <div id="active-challenges-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+            
+            <!-- Completed Challenges -->
+            <div>
+                <h3 class="text-xl font-bold mb-4 text-gray-600">✅ Challenges Complétés</h3>
+                <div id="completed-challenges-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+        
+    </main>
+    
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+    
+    <script>
+        // ============================================================================
+        // CONFIGURATION
+        // ============================================================================
+        
+        const API_BASE_URL = '/api/v1';
+        const CURRENT_USER_ID = 'user-demo-001'; // TODO: Get from auth
+        
+        // ============================================================================
+        // STATE
+        // ============================================================================
+        
+        let state = {
+            currentTab: 'profile',
+            currentPeriod: 'today',
+            userStats: null,
+            leaderboard: null,
+            badges: [],
+            challenges: [],
+            charts: {}
+        };
+        
+        // ============================================================================
+        // INITIALIZATION
+        // ============================================================================
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            setupEventListeners();
+            await loadAllData();
+            renderCurrentTab();
+        });
+        
+        function setupEventListeners() {
+            // Tab navigation
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const tab = e.currentTarget.dataset.tab;
+                    switchTab(tab);
+                });
+            });
+            
+            // Period selector
+            document.querySelectorAll('.period-button').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    const period = e.currentTarget.dataset.period;
+                    await loadLeaderboard(period);
+                    
+                    // Update button states
+                    document.querySelectorAll('.period-button').forEach(btn => {
+                        btn.classList.remove('bg-[#00A5A8]', 'text-white');
+                        btn.classList.add('bg-gray-200', 'text-gray-700');
+                    });
+                    e.currentTarget.classList.remove('bg-gray-200', 'text-gray-700');
+                    e.currentTarget.classList.add('bg-[#00A5A8]', 'text-white');
+                });
+            });
+        }
+        
+        // ============================================================================
+        // DATA LOADING
+        // ============================================================================
+        
+        async function loadAllData() {
+            showLoading();
+            
+            try {
+                await Promise.all([
+                    loadUserStats(),
+                    loadLeaderboard('today'),
+                    loadBadges(),
+                    loadChallenges()
+                ]);
+                
+                hideLoading();
+            } catch (error) {
+                console.error('[Gamification] Error loading data:', error);
+                showToast('Erreur de chargement des données', 'error');
+                hideLoading();
+            }
+        }
+        
+        async function loadUserStats() {
+            try {
+                // Mock data for demo
+                state.userStats = {
+                    user_id: CURRENT_USER_ID,
+                    total_points: 1234,
+                    level: 'Gold',
+                    badges: ['rookie', 'explorer', 'veteran', 'salesman_bronze', 'consistent_7'],
+                    actions: {
+                        visit_completed: 42,
+                        crv_submitted: 35,
+                        action_completed: 67,
+                        sale_closed: 8
+                    },
+                    streak_days: 12,
+                    streak_start: '2026-02-02',
+                    created_at: '2026-01-15',
+                    updated_at: '2026-02-14'
+                };
+                
+                updateUserStatsUI();
+            } catch (error) {
+                console.error('[Gamification] Error loading user stats:', error);
+                throw error;
+            }
+        }
+        
+        async function loadLeaderboard(period = 'today') {
+            try {
+                state.currentPeriod = period;
+                
+                // Mock data for demo
+                state.leaderboard = {
+                    period,
+                    leaderboard: [
+                        { rank: 1, user_id: '1', user_name: 'Karim Idrissi', points: 2456, level: 'Platinum', badges_count: 12, trend: 'up' },
+                        { rank: 2, user_id: '2', user_name: 'Fatima Zahra', points: 2123, level: 'Gold', badges_count: 10, trend: 'up' },
+                        { rank: 3, user_id: '3', user_name: 'Ahmed Benani', points: 1987, level: 'Gold', badges_count: 9, trend: 'stable' },
+                        { rank: 4, user_id: CURRENT_USER_ID, user_name: 'Vous', points: 1234, level: 'Gold', badges_count: 5, trend: 'up' },
+                        { rank: 5, user_id: '5', user_name: 'Yasmine El Fassi', points: 1156, level: 'Silver', badges_count: 7, trend: 'down' }
+                    ],
+                    user_rank: { rank: 4, total_users: 45 }
+                };
+                
+                renderLeaderboard();
+            } catch (error) {
+                console.error('[Gamification] Error loading leaderboard:', error);
+                throw error;
+            }
+        }
+        
+        async function loadBadges() {
+            try {
+                // Mock data for demo
+                const allBadges = [
+                    { id: 'rookie', name: 'Recrue', description: 'Première visite complétée', icon: '🌟', rarity: 'common', unlocked: true },
+                    { id: 'explorer', name: 'Explorateur', description: '10 visites complétées', icon: '🗺️', rarity: 'common', unlocked: true },
+                    { id: 'veteran', name: 'Vétéran', description: '50 visites complétées', icon: '⭐', rarity: 'rare', unlocked: true },
+                    { id: 'master', name: 'Maître', description: '100 visites complétées', icon: '🏆', rarity: 'epic', unlocked: false },
+                    { id: 'salesman_bronze', name: 'Vendeur Bronze', description: '5 ventes conclues', icon: '🥉', rarity: 'common', unlocked: true },
+                    { id: 'salesman_silver', name: 'Vendeur Argent', description: '20 ventes conclues', icon: '🥈', rarity: 'rare', unlocked: false },
+                    { id: 'speedster', name: 'Flash', description: '5 actions en une journée', icon: '⚡', rarity: 'rare', unlocked: false },
+                    { id: 'consistent_7', name: 'Régularité Bronze', description: '7 jours consécutifs actifs', icon: '📅', rarity: 'common', unlocked: true },
+                    { id: 'consistent_30', name: 'Régularité Argent', description: '30 jours consécutifs actifs', icon: '🔥', rarity: 'rare', unlocked: false },
+                    { id: 'champion_weekly', name: 'Champion Hebdomadaire', description: 'Top 3 du leaderboard semaine', icon: '🏅', rarity: 'epic', unlocked: false }
+                ];
+                
+                state.badges = allBadges;
+                renderBadges();
+            } catch (error) {
+                console.error('[Gamification] Error loading badges:', error);
+                throw error;
+            }
+        }
+        
+        async function loadChallenges() {
+            try {
+                // Mock data for demo
+                state.challenges = [
+                    {
+                        id: 'weekly_marathon',
+                        name: 'Marathon Hebdomadaire',
+                        description: 'Compléter 20 visites cette semaine',
+                        type: 'weekly',
+                        goal: 20,
+                        current: 14,
+                        reward_points: 100,
+                        icon: '🎯',
+                        end_date: '2026-02-21',
+                        status: 'active'
+                    },
+                    {
+                        id: 'perfect_crv',
+                        name: 'Perfection CRV',
+                        description: '10 CRV approuvés sans remarque',
+                        type: 'monthly',
+                        goal: 10,
+                        current: 7,
+                        reward_points: 150,
+                        reward_badge: 'perfectionist',
+                        icon: '✨',
+                        end_date: '2026-02-28',
+                        status: 'active'
+                    }
+                ];
+                
+                renderChallenges();
+            } catch (error) {
+                console.error('[Gamification] Error loading challenges:', error);
+                throw error;
+            }
+        }
+        
+        // ============================================================================
+        // RENDERING
+        // ============================================================================
+        
+        function switchTab(tabName) {
+            state.currentTab = tabName;
+            
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('tab-active', 'text-[#00A5A8]');
+                btn.classList.add('text-gray-600');
+            });
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('tab-active', 'text-[#00A5A8]');
+            document.querySelector(`[data-tab="${tabName}"]`).classList.remove('text-gray-600');
+            
+            // Show/hide content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+            
+            renderCurrentTab();
+        }
+        
+        function renderCurrentTab() {
+            switch (state.currentTab) {
+                case 'profile':
+                    renderProfile();
+                    break;
+                case 'leaderboard':
+                    renderLeaderboard();
+                    break;
+                case 'badges':
+                    renderBadges();
+                    break;
+                case 'challenges':
+                    renderChallenges();
+                    break;
+            }
+        }
+        
+        function updateUserStatsUI() {
+            const stats = state.userStats;
+            
+            // Header badge
+            document.getElementById('user-level').textContent = stats.level;
+            document.getElementById('user-points').textContent = stats.total_points;
+            
+            // Stats cards
+            document.getElementById('stat-total-points').textContent = stats.total_points;
+            document.getElementById('stat-badges-count').textContent = stats.badges.length;
+            document.getElementById('stat-streak-days').textContent = stats.streak_days;
+            
+            // Level progress
+            const levelThresholds = { Bronze: 0, Silver: 100, Gold: 500, Platinum: 1500, Diamond: 5000 };
+            const currentThreshold = levelThresholds[stats.level];
+            const nextLevel = Object.keys(levelThresholds).find(level => levelThresholds[level] > stats.total_points) || 'Diamond';
+            const nextThreshold = levelThresholds[nextLevel] || 5000;
+            const progressPercent = ((stats.total_points - currentThreshold) / (nextThreshold - currentThreshold)) * 100;
+            
+            document.getElementById('level-current').textContent = `${stats.level} → ${nextLevel}`;
+            document.getElementById('level-progress-current').textContent = stats.total_points;
+            document.getElementById('level-progress-target').textContent = nextThreshold;
+            document.getElementById('level-progress-bar').style.width = `${Math.min(progressPercent, 100)}%`;
+        }
+        
+        function renderProfile() {
+            if (!state.userStats) return;
+            
+            // Render charts
+            renderWeeklyPointsChart();
+            renderActionsBreakdownChart();
+            
+            // Render recent activities
+            renderRecentActivities();
+        }
+        
+        function renderWeeklyPointsChart() {
+            const ctx = document.getElementById('chart-weekly-points');
+            if (!ctx) return;
+            
+            if (state.charts.weeklyPoints) {
+                state.charts.weeklyPoints.destroy();
+            }
+            
+            state.charts.weeklyPoints = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+                    datasets: [{
+                        label: 'Points',
+                        data: [120, 145, 98, 167, 134, 89, 156],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+        }
+        
+        function renderActionsBreakdownChart() {
+            const ctx = document.getElementById('chart-actions-breakdown');
+            if (!ctx) return;
+            
+            if (state.charts.actionsBreakdown) {
+                state.charts.actionsBreakdown.destroy();
+            }
+            
+            const actions = state.userStats.actions;
+            
+            state.charts.actionsBreakdown = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Visites', 'CRV', 'Actions', 'Ventes'],
+                    datasets: [{
+                        data: [
+                            actions.visit_completed || 0,
+                            actions.crv_submitted || 0,
+                            actions.action_completed || 0,
+                            actions.sale_closed || 0
+                        ],
+                        backgroundColor: ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+        
+        function renderRecentActivities() {
+            const container = document.getElementById('recent-activities-list');
+            const activities = [
+                { action: 'visit_completed', points: 10, time: '2h ago', icon: '📍' },
+                { action: 'crv_submitted', points: 15, time: '5h ago', icon: '📋' },
+                { action: 'sale_closed', points: 100, time: '1 jour', icon: '💰' },
+                { action: 'action_completed', points: 8, time: '2 jours', icon: '✅' }
+            ];
+            
+            container.innerHTML = activities.map(act => `
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-2xl">${act.icon}</span>
+                        <div>
+                            <p class="font-medium">${getActionLabel(act.action)}</p>
+                            <p class="text-sm text-gray-500">${act.time}</p>
+                        </div>
+                    </div>
+                    <span class="text-[#00A5A8] font-bold">+${act.points} pts</span>
+                </div>
+            `).join('');
+        }
+        
+        function renderLeaderboard() {
+            if (!state.leaderboard) return;
+            
+            const { leaderboard, user_rank } = state.leaderboard;
+            const container = document.getElementById('leaderboard-list');
+            
+            // Show user rank card if not in top 10
+            const userRankCard = document.getElementById('user-rank-card');
+            if (user_rank && user_rank.rank > 10) {
+                document.getElementById('user-rank-position').textContent = user_rank.rank;
+                document.getElementById('user-rank-points').textContent = `${state.userStats.total_points} points`;
+                document.getElementById('user-rank-total').textContent = user_rank.total_users;
+                userRankCard.classList.remove('hidden');
+            } else {
+                userRankCard.classList.add('hidden');
+            }
+            
+            // Update rank stat
+            if (user_rank) {
+                document.getElementById('stat-rank').textContent = user_rank.rank;
+            }
+            
+            // Render leaderboard
+            container.innerHTML = leaderboard.map(entry => {
+                const isCurrentUser = entry.user_id === CURRENT_USER_ID;
+                const topClass = entry.rank === 1 ? 'leaderboard-top1' : entry.rank === 2 ? 'leaderboard-top2' : entry.rank === 3 ? 'leaderboard-top3' : '';
+                const bgClass = isCurrentUser ? 'bg-blue-50 border-2 border-blue-500' : 'bg-white hover:bg-gray-50';
+                
+                return `
+                    <div class="flex items-center justify-between p-4 ${bgClass} ${topClass} transition">
+                        <div class="flex items-center space-x-4">
+                            <div class="text-2xl font-bold ${topClass ? 'text-white' : 'text-gray-600'}" style="min-width: 50px;">
+                                ${entry.rank <= 3 ? ['🥇', '🥈', '🥉'][entry.rank - 1] : `#${entry.rank}`}
+                            </div>
+                            <div>
+                                <p class="font-bold ${topClass ? 'text-white' : 'text-gray-900'}">
+                                    ${entry.user_name}
+                                    ${isCurrentUser ? '<span class="ml-2 px-2 py-1 bg-[#00A5A8] text-white text-xs rounded-full">Vous</span>' : ''}
+                                </p>
+                                <p class="text-sm ${topClass ? 'text-white opacity-90' : 'text-gray-500'}">
+                                    ${entry.level} • ${entry.badges_count} badges
+                                </p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xl font-bold ${topClass ? 'text-white' : 'text-[#00A5A8]'}">${entry.points} pts</p>
+                            <p class="text-sm ${topClass ? 'text-white opacity-90' : 'text-gray-500'}">
+                                ${entry.trend === 'up' ? '📈' : entry.trend === 'down' ? '📉' : '➡️'}
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function renderBadges() {
+            if (!state.badges.length) return;
+            
+            const container = document.getElementById('badges-grid');
+            
+            // Update stats
+            const unlockedBadges = state.badges.filter(b => b.unlocked);
+            document.getElementById('badges-total').textContent = unlockedBadges.length;
+            document.getElementById('badges-common').textContent = unlockedBadges.filter(b => b.rarity === 'common').length;
+            document.getElementById('badges-rare').textContent = unlockedBadges.filter(b => ['rare', 'epic'].includes(b.rarity)).length;
+            document.getElementById('badges-legendary').textContent = unlockedBadges.filter(b => b.rarity === 'legendary').length;
+            
+            // Render badges
+            container.innerHTML = state.badges.map(badge => {
+                const rarityClass = `badge-${badge.rarity}`;
+                const lockedClass = badge.unlocked ? '' : 'opacity-40 grayscale';
+                
+                return `
+                    <div class="bg-white p-4 rounded-xl shadow-md text-center hover:scale-105 transition ${lockedClass}">
+                        <div class="${rarityClass} text-white w-16 h-16 rounded-full flex items-center justify-center text-3xl mx-auto mb-3">
+                            ${badge.icon}
+                        </div>
+                        <p class="font-bold text-sm mb-1">${badge.name}</p>
+                        <p class="text-xs text-gray-500 mb-2">${badge.description}</p>
+                        ${badge.unlocked ? 
+                            '<span class="text-xs text-[#00A5A8] font-medium">✓ Débloqué</span>' :
+                            '<span class="text-xs text-gray-400 font-medium">🔒 Verrouillé</span>'
+                        }
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function renderChallenges() {
+            if (!state.challenges.length) return;
+            
+            const activeChallenges = state.challenges.filter(c => c.status === 'active');
+            const completedChallenges = state.challenges.filter(c => c.status === 'completed');
+            
+            // Active challenges
+            const activeContainer = document.getElementById('active-challenges-list');
+            activeContainer.innerHTML = activeChallenges.map(challenge => {
+                const progress = (challenge.current / challenge.goal) * 100;
+                const daysLeft = Math.ceil((new Date(challenge.end_date) - new Date()) / (1000 * 60 * 60 * 24));
+                
+                return `
+                    <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition">
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-4xl">${challenge.icon}</span>
+                                <div>
+                                    <h4 class="font-bold text-lg">${challenge.name}</h4>
+                                    <p class="text-sm text-gray-500">${challenge.description}</p>
+                                </div>
+                            </div>
+                            <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">${challenge.type}</span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm font-medium">Progression</span>
+                                <span class="text-sm text-gray-600">${challenge.current} / ${challenge.goal}</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                                <div class="progress-bar bg-gradient-to-r from-green-400 to-blue-500 h-3 rounded-full" style="width: ${progress}%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-500">
+                                <i class="far fa-clock mr-1"></i>
+                                ${daysLeft} jours restants
+                            </span>
+                            <span class="text-[#00A5A8] font-bold">
+                                <i class="fas fa-trophy mr-1"></i>
+                                +${challenge.reward_points} pts
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Completed challenges
+            const completedContainer = document.getElementById('completed-challenges-list');
+            if (completedChallenges.length === 0) {
+                completedContainer.innerHTML = '<p class="text-gray-500 text-center col-span-2">Aucun challenge complété pour le moment.</p>';
+            } else {
+                completedContainer.innerHTML = completedChallenges.map(challenge => `
+                    <div class="bg-gray-50 p-6 rounded-xl border-2 border-green-500">
+                        <div class="flex items-center space-x-3 mb-2">
+                            <span class="text-3xl">${challenge.icon}</span>
+                            <div>
+                                <h4 class="font-bold">${challenge.name}</h4>
+                                <p class="text-sm text-gray-600">${challenge.description}</p>
+                            </div>
+                        </div>
+                        <p class="text-[#00A5A8] font-bold mt-4">
+                            ✓ Complété • +${challenge.reward_points} pts gagnés
+                        </p>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        // ============================================================================
+        // UTILITIES
+        // ============================================================================
+        
+        function getActionLabel(action) {
+            const labels = {
+                visit_completed: 'Visite complétée',
+                crv_submitted: 'CRV soumis',
+                action_completed: 'Action terrain complétée',
+                sale_closed: 'Vente conclue'
+            };
+            return labels[action] || action;
+        }
+        
+        function showLoading() {
+            // TODO: Implement loading state
+        }
+        
+        function hideLoading() {
+            // TODO: Implement loading state
+        }
+        
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-[#FFD600]' : 'bg-red-600';
+            
+            toast.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-lg slide-in`;
+            toast.textContent = message;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

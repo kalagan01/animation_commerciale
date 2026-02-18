@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détail Lead - NeoImpact</title>
+    
+    <!-- NeoImpact UI CSS -->
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+    
+    <!-- External CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    
+    <style>
+        :root {
+            --wafa-primary: #00A5A8;
+            --wafa-accent: #FFD600;
+            --wafa-success: #4CAF50;
+        }
+        
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #F5F7FA;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--wafa-primary) 0%, #008B8E 100%);
+            box-shadow: 0 4px 12px rgba(0, 165, 168, 0.3);
+        }
+        
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .score-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .score-a {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .score-b {
+            background: #FFD600;
+            color: #000;
+        }
+        
+        .btn-action {
+            background: var(--wafa-accent);
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 20px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-action:hover {
+            background: #FFE033;
+            box-shadow: 0 4px 12px rgba(255, 214, 0, 0.4);
+        }
+        
+        .feature-bar {
+            height: 24px;
+            background: var(--wafa-primary);
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header text-white py-4 px-4">
+        <div class="flex items-center justify-between">
+            <button onclick="history.back()" class="text-white">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            
+            <!-- Logo NeoImpact -->
+            <div class="neoimpact-logo" style="display: flex; align-items: center; gap: 12px;">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                        <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                        <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                        <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                    </svg>
+                </div>
+                <div class="logo-text" style="line-height: 1.2;">
+                    <div class="logo-arabic" style="font-size: 12px; font-weight: 600; color: white;">وفاسلف</div>
+                    <div class="logo-latin" style="font-size: 9px; color: rgba(255,255,255,0.8); letter-spacing: 1px;">NeoImpact</div>
+                </div>
+            </div>
+            
+            <button class="text-white">
+                <i class="fas fa-ellipsis-v text-xl"></i>
+            </button>
+        </div>
+    </header>
+
+    <main class="pb-24">
+        <!-- Score IA -->
+        <div class="info-card">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold">Entreprise Al Manar SARL</h2>
+                <span class="score-badge score-a">87%</span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <div class="text-sm text-gray-600">Contact</div>
+                    <div class="font-semibold">Hassan Brahim</div>
+                    <div class="text-sm text-[#00A5A8]">
+                        <i class="fas fa-phone"></i> +212 612-345-678
+                    </div>
+                </div>
+                <div>
+                    <div class="text-sm text-gray-600">Distance</div>
+                    <div class="font-semibold">2,3 km</div>
+                    <div class="text-sm text-gray-600">Rue Mohamed V, Casa</div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4 p-4 bg-green-50 rounded-lg">
+                <div>
+                    <div class="text-xs text-gray-600">Probabilité 7j</div>
+                    <div class="text-2xl font-bold text-green-600">78%</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-600">Probabilité 30j</div>
+                    <div class="text-2xl font-bold text-green-600">62%</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-600">Revenus estimés</div>
+                    <div class="text-2xl font-bold text-[#00A5A8]">~1 392 MAD</div>
+                </div>
+                <div>
+                    <div class="text-xs text-gray-600">Catégorie</div>
+                    <div class="text-2xl font-bold text-green-600">A</div>
+                </div>
+            </div>
+            
+            <div class="flex gap-3 mt-4">
+                <button class="btn-action flex-1">
+                    <i class="fas fa-phone"></i> Appeler
+                </button>
+                <button class="btn-action flex-1" style="background: var(--wafa-primary); color: white;">
+                    <i class="fas fa-route"></i> Itinéraire
+                </button>
+            </div>
+        </div>
+
+        <!-- Pourquoi ce score ? (FIX BUG-001) -->
+        <div class="info-card">
+            <h2 class="text-lg font-bold mb-4 flex items-center gap-2">
+                <i class="fas fa-brain" style="color: var(--wafa-primary);"></i>
+                Pourquoi ce score IA ?
+            </h2>
+            
+            <p class="text-sm text-gray-600 mb-4">
+                L'IA analyse 10 caractéristiques pour calculer le score de priorité :
+            </p>
+            
+            <!-- Canvas pour Chart.js (FIX CRITIQUE) -->
+            <canvas id="feature-importance-chart" width="100%" height="300"></canvas>
+            
+            <div class="mt-4">
+                <div class="mb-3">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>Engagement Web</span>
+                        <span class="font-semibold">92%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="feature-bar" style="width: 92%;"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>Taille Entreprise</span>
+                        <span class="font-semibold">85%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="feature-bar" style="width: 85%;"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>Historique Contacts</span>
+                        <span class="font-semibold">78%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="feature-bar" style="width: 78%;"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>Proximité Géographique</span>
+                        <span class="font-semibold">95%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="feature-bar" style="width: 95%;"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span>Secteur d'Activité</span>
+                        <span class="font-semibold">82%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="feature-bar" style="width: 82%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommandations -->
+        <div class="info-card">
+            <h2 class="text-lg font-bold mb-3">
+                <i class="fas fa-lightbulb" style="color: var(--wafa-accent);"></i>
+                Recommandations IA
+            </h2>
+            
+            <div class="space-y-2">
+                <div class="flex items-start gap-3 p-3 bg-cyan-50 rounded-lg">
+                    <i class="fas fa-phone text-[#00A5A8] mt-1"></i>
+                    <div>
+                        <div class="font-semibold">Meilleur moment d'appel</div>
+                        <div class="text-sm text-gray-600">Entre 10h00 et 11h30 (taux réponse: 78%)</div>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-3 p-3 bg-cyan-50 rounded-lg">
+                    <i class="fas fa-map-marker-alt text-[#00A5A8] mt-1"></i>
+                    <div>
+                        <div class="font-semibold">Visite terrain recommandée</div>
+                        <div class="text-sm text-gray-600">Proximité 2,3 km - Planifier cette semaine</div>
+                    </div>
+                </div>
+                
+                <div class="flex items-start gap-3 p-3 bg-yellow-50 rounded-lg">
+                    <i class="fas fa-clock text-yellow-600 mt-1"></i>
+                    <div>
+                        <div class="font-semibold">Urgence modérée</div>
+                        <div class="text-sm text-gray-600">Contacter dans les 48h pour maximiser conversion</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialiser le graphique Chart.js (FIX BUG-001)
+        document.addEventListener('DOMContentLoaded', function() {
+            const canvas = document.getElementById('feature-importance-chart');
+            
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: [
+                            'Engagement Web',
+                            'Taille Entreprise',
+                            'Historique',
+                            'Proximité GPS',
+                            'Secteur',
+                            'Email Ouverts',
+                            'Appels Répondus',
+                            'Budget Estimé',
+                            'Décideur Contact',
+                            'Timing'
+                        ],
+                        datasets: [{
+                            label: 'Importance (%)',
+                            data: [92, 85, 78, 95, 82, 75, 68, 88, 80, 70],
+                            backgroundColor: '#00A5A8',
+                            borderColor: '#00A5A8',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.parsed.x + '% importance';
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

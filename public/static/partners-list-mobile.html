@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Partenaires - NeoImpact Animation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="bg-wa-primary text-white sticky top-0 z-50 shadow-lg">
+        <div class="flex items-center justify-between px-4 py-4">
+            <a href="/static/dashboard-mobile.html" class="flex items-center space-x-2">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </a>
+            <!-- Logo NeoImpact -->
+                <div class="neoimpact-logo" style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
+                    <div class="logo-icon">
+                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="line-height: 1.2;">
+                        <div class="logo-arabic" style="font-size: 14px; font-weight: 600; color: #00A5A8;">وفاسلف</div>
+                        <div class="logo-latin" style="font-size: 10px; color: #6B6B6B; letter-spacing: 1px;">NeoImpact</div>
+                    </div>
+                </div>
+<h1 class="text-lg font-bold flex-1 text-center">Partenaires CRM</h1>
+            <button id="gps-search-btn" class="flex items-center justify-center">
+                <i class="fas fa-map-marker-alt text-xl"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Statistics Cards -->
+    <div class="px-4 py-3 bg-white border-b">
+        <div class="grid grid-cols-2 gap-3">
+            <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-3 text-white shadow-md">
+                <div class="text-xs opacity-90">Total Partenaires</div>
+                <div id="stat-total" class="text-2xl font-bold mt-1">0</div>
+            </div>
+            <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-3 text-white shadow-md">
+                <div class="text-xs opacity-90">Actifs</div>
+                <div id="stat-active" class="text-2xl font-bold mt-1">0</div>
+            </div>
+            <div class="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg p-3 text-white shadow-md">
+                <div class="text-xs opacity-90">Contrats en cours</div>
+                <div id="stat-contracts" class="text-2xl font-bold mt-1">0</div>
+            </div>
+            <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg p-3 text-white shadow-md">
+                <div class="text-xs opacity-90">Performance moy.</div>
+                <div id="stat-performance" class="text-2xl font-bold mt-1">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="bg-white px-4 py-3 border-b">
+        <!-- Search Bar -->
+        <div class="relative mb-3">
+            <i class="fas fa-search absolute left-3 top-3.5 text-gray-400"></i>
+            <input 
+                type="text" 
+                id="search-input" 
+                placeholder="Rechercher partenaire, SIRET..." 
+                class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-wa-primary focus:border-transparent"
+            >
+        </div>
+
+        <!-- Advanced Filters Toggle -->
+        <button id="toggle-filters-btn" class="flex items-center space-x-2 text-wa-primary text-sm font-medium mb-3">
+            <i class="fas fa-filter"></i>
+            <span>Filtres avancés</span>
+            <i class="fas fa-chevron-down" id="filter-icon"></i>
+        </button>
+
+        <!-- Advanced Filters (Hidden by default) -->
+        <div id="advanced-filters" class="hidden space-y-3">
+            <!-- Statut Filter -->
+            <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Statut</label>
+                <select id="filter-status" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm">
+                    <option value="">Tous les statuts</option>
+                    <option value="active">Actif</option>
+                    <option value="inactive">Inactif</option>
+                    <option value="suspended">Suspendu</option>
+                </select>
+            </div>
+
+            <!-- Type Filter -->
+            <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Type</label>
+                <select id="filter-type" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm">
+                    <option value="">Tous les types</option>
+                    <option value="concessionnaire">Concessionnaire</option>
+                    <option value="commercant">Commerçant</option>
+                    <option value="courtier">Courtier</option>
+                    <option value="agent">Agent</option>
+                </select>
+            </div>
+
+            <!-- Organisation Filter -->
+            <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Organisation</label>
+                <select id="filter-organisation" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm">
+                    <option value="">Toutes les organisations</option>
+                </select>
+            </div>
+
+            <!-- Territory Filter -->
+            <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Territoire</label>
+                <select id="filter-territory" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm">
+                    <option value="">Tous les territoires</option>
+                </select>
+            </div>
+
+            <!-- Performance Filter -->
+            <div>
+                <label class="block text-xs font-medium text-gray-700 mb-1">Performance</label>
+                <select id="filter-performance" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm">
+                    <option value="">Toutes performances</option>
+                    <option value="excellent">Excellent (&gt; 90%)</option>
+                    <option value="good">Bon (70-90%)</option>
+                    <option value="average">Moyen (50-70%)</option>
+                    <option value="poor">Faible (&lt; 50%)</option>
+                </select>
+            </div>
+
+            <!-- Apply Filters Button -->
+            <button id="apply-filters-btn" class="w-full bg-wa-primary text-white py-2 rounded-lg font-medium">
+                <i class="fas fa-check mr-2"></i>Appliquer les filtres
+            </button>
+        </div>
+    </div>
+
+    <!-- Partners List -->
+    <div id="partners-container" class="px-4 py-3 space-y-3">
+        <!-- Partners will be rendered here -->
+    </div>
+
+    <!-- Loading State -->
+    <div id="loading-state" class="text-center py-12 hidden">
+        <i class="fas fa-spinner fa-spin text-4xl text-wa-primary mb-3"></i>
+        <p class="text-gray-600">Chargement des partenaires...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div id="empty-state" class="text-center py-12 hidden">
+        <i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
+        <h3 class="text-lg font-medium text-gray-700 mb-2">Aucun partenaire trouvé</h3>
+        <p class="text-gray-500 text-sm">Modifiez vos filtres ou créez un nouveau partenaire</p>
+    </div>
+
+    <!-- Pagination -->
+    <div id="pagination-container" class="px-4 py-4 bg-white border-t">
+        <div class="flex items-center justify-between text-sm">
+            <button id="prev-btn" class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                <i class="fas fa-chevron-left mr-2"></i>Précédent
+            </button>
+            <span id="page-info" class="text-gray-600">Page 1</span>
+            <button id="next-btn" class="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                Suivant<i class="fas fa-chevron-right ml-2"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button id="add-partner-btn" class="fixed bottom-20 right-5 w-14 h-14 bg-wa-primary text-white rounded-full shadow-2xl flex items-center justify-center hover:bg-wa-primary-dark transition-all duration-300 transform hover:scale-110 active:scale-95 z-40">
+        <i class="fas fa-plus text-xl"></i>
+    </button>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
+        <div class="grid grid-cols-4 h-16">
+            <a href="/static/dashboard-mobile.html" class="flex flex-col items-center justify-center space-y-1 text-gray-500">
+                <i class="fas fa-home text-xl"></i>
+                <span class="text-xs">Accueil</span>
+            </a>
+            <a href="/static/partners-list-mobile.html" class="flex flex-col items-center justify-center space-y-1 text-wa-primary border-t-2 border-wa-primary">
+                <i class="fas fa-users text-xl"></i>
+                <span class="text-xs font-medium">Partenaires</span>
+            </a>
+            <a href="/static/visits-mobile.html" class="flex flex-col items-center justify-center space-y-1 text-gray-500">
+                <i class="fas fa-route text-xl"></i>
+                <span class="text-xs">Visites</span>
+            </a>
+            <a href="/static/profile-mobile.html" class="flex flex-col items-center justify-center space-y-1 text-gray-500">
+                <i class="fas fa-user text-xl"></i>
+                <span class="text-xs">Profil</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- GPS Location Modal -->
+    <div id="gps-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg w-full max-w-md">
+            <div class="flex items-center justify-between p-4 border-b">
+                <h3 class="text-lg font-bold">Recherche GPS</h3>
+                <button id="close-gps-modal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-4 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Rayon de recherche (km)</label>
+                    <input type="number" id="gps-radius" value="5" min="1" max="50" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                </div>
+                <button id="search-gps-btn" class="w-full bg-wa-primary text-white py-3 rounded-lg font-medium">
+                    <i class="fas fa-location-arrow mr-2"></i>Rechercher autour de moi
+                </button>
+                <p class="text-xs text-gray-500 text-center">
+                    <i class="fas fa-info-circle mr-1"></i>Nécessite l'activation de la géolocalisation
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script>
+        // Configuration
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000'
+            : window.location.origin;
+
+        // State
+        let currentPage = 1;
+        let currentFilters = {};
+        let totalPages = 1;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadOrganisations();
+            loadTerritories();
+            loadPartners();
+            setupEventListeners();
+        });
+
+        // Check authentication
+        function checkAuth() {
+            const token = localStorage.getItem('access_token');
+            if (!token) {
+                window.location.href = '/static/login-mobile.html';
+                return;
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Search input with debounce
+            document.getElementById('search-input').addEventListener('input', debounce(() => {
+                currentPage = 1;
+                loadPartners();
+            }, 500));
+
+            // Toggle advanced filters
+            document.getElementById('toggle-filters-btn').addEventListener('click', () => {
+                const filters = document.getElementById('advanced-filters');
+                const icon = document.getElementById('filter-icon');
+                filters.classList.toggle('hidden');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            });
+
+            // Apply filters
+            document.getElementById('apply-filters-btn').addEventListener('click', () => {
+                currentPage = 1;
+                loadPartners();
+            });
+
+            // GPS Search
+            document.getElementById('gps-search-btn').addEventListener('click', () => {
+                document.getElementById('gps-modal').classList.remove('hidden');
+            });
+
+            document.getElementById('close-gps-modal').addEventListener('click', () => {
+                document.getElementById('gps-modal').classList.add('hidden');
+            });
+
+            document.getElementById('search-gps-btn').addEventListener('click', searchByGPS);
+
+            // Pagination
+            document.getElementById('prev-btn').addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    loadPartners();
+                }
+            });
+
+            document.getElementById('next-btn').addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    loadPartners();
+                }
+            });
+
+            // Add partner button
+            document.getElementById('add-partner-btn').addEventListener('click', () => {
+                window.location.href = '/static/partner-form-mobile.html';
+            });
+        }
+
+        // Load organisations for filter
+        async function loadOrganisations() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await axios.get(`${API_BASE}/api/v1/organisations`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (response.data.success && response.data.data) {
+                    const select = document.getElementById('filter-organisation');
+                    response.data.data.forEach(org => {
+                        const option = document.createElement('option');
+                        option.value = org.id;
+                        option.textContent = org.name;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Erreur chargement organisations:', error);
+            }
+        }
+
+        // Load territories for filter
+        async function loadTerritories() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await axios.get(`${API_BASE}/api/v1/territories`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (response.data.success && response.data.data) {
+                    const select = document.getElementById('filter-territory');
+                    response.data.data.forEach(territory => {
+                        const option = document.createElement('option');
+                        option.value = territory.id;
+                        option.textContent = territory.name;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                console.error('Erreur chargement territoires:', error);
+            }
+        }
+
+        // Load partners with filters
+        async function loadPartners() {
+            const container = document.getElementById('partners-container');
+            const loadingState = document.getElementById('loading-state');
+            const emptyState = document.getElementById('empty-state');
+
+            // Show loading
+            container.innerHTML = '';
+            emptyState.classList.add('hidden');
+            loadingState.classList.remove('hidden');
+
+            try {
+                const token = localStorage.getItem('access_token');
+                
+                // Build query parameters
+                const params = new URLSearchParams({
+                    page: currentPage,
+                    limit: 20
+                });
+
+                // Search
+                const search = document.getElementById('search-input').value.trim();
+                if (search) params.append('search', search);
+
+                // Filters
+                const status = document.getElementById('filter-status').value;
+                if (status) params.append('status', status);
+
+                const type = document.getElementById('filter-type').value;
+                if (type) params.append('type', type);
+
+                const organisationId = document.getElementById('filter-organisation').value;
+                if (organisationId) params.append('organisation_id', organisationId);
+
+                const territoryId = document.getElementById('filter-territory').value;
+                if (territoryId) params.append('territory_id', territoryId);
+
+                const performance = document.getElementById('filter-performance').value;
+                if (performance) params.append('performance', performance);
+
+                // API Call
+                const response = await axios.get(`${API_BASE}/api/v1/partners?${params}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                loadingState.classList.add('hidden');
+
+                if (response.data.success) {
+                    const partners = response.data.data;
+                    const stats = response.data.stats;
+                    const pagination = response.data.pagination;
+
+                    // Update statistics
+                    if (stats) {
+                        document.getElementById('stat-total').textContent = stats.total || 0;
+                        document.getElementById('stat-active').textContent = stats.active || 0;
+                        document.getElementById('stat-contracts').textContent = stats.active_contracts || 0;
+                        document.getElementById('stat-performance').textContent = 
+                            stats.avg_performance ? `${Math.round(stats.avg_performance)}%` : '0%';
+                    }
+
+                    // Render partners
+                    if (partners && partners.length > 0) {
+                        container.innerHTML = partners.map(partner => renderPartnerCard(partner)).join('');
+                    } else {
+                        emptyState.classList.remove('hidden');
+                    }
+
+                    // Update pagination
+                    if (pagination) {
+                        totalPages = pagination.total_pages || 1;
+                        updatePagination(pagination);
+                    }
+                }
+            } catch (error) {
+                loadingState.classList.add('hidden');
+                console.error('Erreur chargement partenaires:', error);
+                showAlert('Erreur lors du chargement des partenaires', 'error');
+                
+                // Handle auth errors
+                if (error.response && error.response.status === 401) {
+                    localStorage.removeItem('access_token');
+                    window.location.href = '/static/login-mobile.html';
+                }
+            }
+        }
+
+        // Render partner card
+        function renderPartnerCard(partner) {
+            const statusColors = {
+                active: 'bg-green-100 text-green-800',
+                inactive: 'bg-gray-100 text-gray-800',
+                suspended: 'bg-red-100 text-red-800'
+            };
+
+            const statusLabels = {
+                active: 'Actif',
+                inactive: 'Inactif',
+                suspended: 'Suspendu'
+            };
+
+            const typeLabels = {
+                concessionnaire: 'Concessionnaire',
+                commercant: 'Commerçant',
+                courtier: 'Courtier',
+                agent: 'Agent'
+            };
+
+            const performanceScore = partner.performance_score || 0;
+            const performanceColor = performanceScore >= 90 ? 'text-[#00A5A8]' : 
+                                    performanceScore >= 70 ? 'text-[#00A5A8]' :
+                                    performanceScore >= 50 ? 'text-yellow-600' : 'text-red-600';
+
+            return `
+                <div class="bg-white rounded-lg shadow-md border border-gray-200 p-4 cursor-pointer hover:shadow-lg transition-shadow duration-200"
+                     onclick="viewPartner('${partner.id}')">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1">
+                            <h3 class="font-bold text-gray-900 text-base mb-1">${partner.name || 'N/A'}</h3>
+                            <p class="text-sm text-gray-600">${partner.code || 'N/A'}</p>
+                        </div>
+                        <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColors[partner.status] || statusColors.inactive}">
+                            ${statusLabels[partner.status] || 'Inconnu'}
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 mb-3 text-sm">
+                        <div class="flex items-center space-x-2 text-gray-600">
+                            <i class="fas fa-briefcase text-xs"></i>
+                            <span class="truncate">${typeLabels[partner.type] || 'N/A'}</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-gray-600">
+                            <i class="fas fa-building text-xs"></i>
+                            <span class="truncate">${partner.organisation?.name || 'N/A'}</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-gray-600">
+                            <i class="fas fa-map-marker-alt text-xs"></i>
+                            <span class="truncate">${partner.city || 'N/A'}</span>
+                        </div>
+                        <div class="flex items-center space-x-2 text-gray-600">
+                            <i class="fas fa-file-contract text-xs"></i>
+                            <span>${partner.active_contracts || 0} contrat(s)</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-chart-line ${performanceColor}"></i>
+                            <span class="text-sm font-medium ${performanceColor}">
+                                Performance: ${performanceScore}%
+                            </span>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                </div>
+            `;
+        }
+
+        // View partner details
+        function viewPartner(partnerId) {
+            window.location.href = `/static/partner-detail-mobile.html?id=${partnerId}`;
+        }
+
+        // Update pagination
+        function updatePagination(pagination) {
+            document.getElementById('page-info').textContent = 
+                `Page ${pagination.page || 1} sur ${pagination.total_pages || 1}`;
+            
+            document.getElementById('prev-btn').disabled = (pagination.page || 1) === 1;
+            document.getElementById('next-btn').disabled = !pagination.has_next;
+        }
+
+        // GPS Search
+        async function searchByGPS() {
+            if (!navigator.geolocation) {
+                showAlert('Géolocalisation non supportée par votre navigateur', 'error');
+                return;
+            }
+
+            const radius = document.getElementById('gps-radius').value;
+
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                try {
+                    const token = localStorage.getItem('access_token');
+                    const { latitude, longitude } = position.coords;
+
+                    const response = await axios.get(
+                        `${API_BASE}/api/v1/partners/search-location?latitude=${latitude}&longitude=${longitude}&radius=${radius}`,
+                        { headers: { Authorization: `Bearer ${token}` } }
+                    );
+
+                    if (response.data.success) {
+                        const partners = response.data.data;
+                        const container = document.getElementById('partners-container');
+
+                        if (partners && partners.length > 0) {
+                            container.innerHTML = partners.map(partner => renderPartnerCard(partner)).join('');
+                            showAlert(`${partners.length} partenaire(s) trouvé(s) dans un rayon de ${radius}km`, 'success');
+                        } else {
+                            container.innerHTML = '';
+                            document.getElementById('empty-state').classList.remove('hidden');
+                        }
+
+                        document.getElementById('gps-modal').classList.add('hidden');
+                    }
+                } catch (error) {
+                    console.error('Erreur recherche GPS:', error);
+                    showAlert('Erreur lors de la recherche GPS', 'error');
+                }
+            }, (error) => {
+                console.error('Erreur géolocalisation:', error);
+                showAlert('Impossible d\'obtenir votre position', 'error');
+            });
+        }
+
+        // Utility: debounce
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Show alert
+        function showAlert(message, type = 'info') {
+            const bgColors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                info: 'bg-blue-500'
+            };
+
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `fixed top-20 left-4 right-4 ${bgColors[type]} text-white px-4 py-3 rounded-lg shadow-lg z-50 animate-fade-in`;
+            alertDiv.innerHTML = `
+                <div class="flex items-center justify-between">
+                    <span>${message}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="ml-4">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 5000);
+        }
+    </script>
+</body>
+</html>

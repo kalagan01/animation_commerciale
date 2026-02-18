@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation - NeoImpact</title>
+    <link href="/css/neoimpact-design-system.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #F5F5F5;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0097A7 0%, #00BCD4 100%);
+            color: white;
+            padding: 16px 20px;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: 8px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #FFD600 0%, #FFC107 100%);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 24px;
+        }
+
+        .result-value {
+            font-size: 36px;
+            font-weight: bold;
+            color: var(--color-dark);
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: var(--color-dark);
+            opacity: 0.8;
+            margin-top: 8px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--color-border-light);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--color-text-secondary);
+            font-size: 11px;
+            padding: 8px;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item.active {
+            color: var(--color-primary);
+        }
+    </style>
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <button class="back-btn" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="header-title">
+                <!-- Logo NeoImpact -->
+                <div class="neoimpact-logo" style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
+                    <div class="logo-icon">
+                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="line-height: 1.2;">
+                        <div class="logo-arabic" style="font-size: 14px; font-weight: 600; color: #00A5A8;">وفاسلف</div>
+                        <div class="logo-latin" style="font-size: 10px; color: #6B6B6B; letter-spacing: 1px;">NeoImpact</div>
+                    </div>
+                </div>
+<h1 style="margin: 0; font-size: 20px;">Simulation de Crédit</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="form-section">
+            <h2 style="font-size: 18px; margin-bottom: 16px;">Informations du crédit</h2>
+            
+            <div class="form-group">
+                <label>Montant du crédit (MAD)</label>
+                <input type="number" id="montant" value="100000" min="10000" max="500000" step="1000">
+            </div>
+
+            <div class="form-group">
+                <label>Durée (mois)</label>
+                <select id="duree">
+                    <option value="12">12 mois</option>
+                    <option value="24">24 mois</option>
+                    <option value="36">36 mois</option>
+                    <option value="48" selected>48 mois</option>
+                    <option value="60">60 mois</option>
+                    <option value="72">72 mois</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Taux d'intérêt (%)</label>
+                <input type="number" id="taux" value="5.5" min="1" max="15" step="0.1">
+            </div>
+
+            <button class="btn btn-primary" onclick="calculate()" style="width: 100%; margin-top: 8px;">
+                <i class="fas fa-calculator"></i> Calculer
+            </button>
+        </div>
+
+        <div class="result-card" id="resultCard" style="display: none;">
+            <div class="result-value" id="mensualite">-</div>
+            <div class="result-label">Mensualité estimée</div>
+            <div style="margin-top: 16px; font-size: 13px; opacity: 0.9;">
+                <div>Montant total: <strong id="total">-</strong></div>
+                <div>Coût du crédit: <strong id="cout">-</strong></div>
+            </div>
+        </div>
+
+        <div style="margin-top: 24px; padding: 16px; background: #E3F2FD; border-radius: 12px; font-size: 13px;">
+            <i class="fas fa-info-circle" style="color: #1976D2;"></i>
+            <strong>Simulation indicative</strong> - Les taux et conditions finales peuvent varier selon le profil client.
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="/static/dashboard-mobile.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
+        </a>
+        <a href="/static/dossiers-mobile.html" class="nav-item">
+            <i class="fas fa-folder"></i>
+            <span>Dossiers</span>
+        </a>
+        <a href="/static/simulation-mobile.html" class="nav-item active">
+            <i class="fas fa-calculator"></i>
+            <span>Simulation</span>
+        </a>
+        <a href="/static/statistics-mobile.html" class="nav-item">
+            <i class="fas fa-chart-bar"></i>
+            <span>Stats</span>
+        </a>
+        <a href="/static/profil-mobile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profil</span>
+        </a>
+    </div>
+
+    <script>
+        function calculate() {
+            const montant = parseFloat(document.getElementById('montant').value);
+            const duree = parseInt(document.getElementById('duree').value);
+            const taux = parseFloat(document.getElementById('taux').value) / 100 / 12;
+
+            // Formule mensualité: M = C × (t / (1 - (1 + t)^-n))
+            const mensualite = montant * (taux / (1 - Math.pow(1 + taux, -duree)));
+            const total = mensualite * duree;
+            const cout = total - montant;
+
+            document.getElementById('mensualite').textContent = Math.round(mensualite).toLocaleString('fr-FR') + ' MAD';
+            document.getElementById('total').textContent = Math.round(total).toLocaleString('fr-FR') + ' MAD';
+            document.getElementById('cout').textContent = Math.round(cout).toLocaleString('fr-FR') + ' MAD';
+            document.getElementById('resultCard').style.display = 'block';
+        }
+
+        // Auto-calculate on page load
+        document.addEventListener('DOMContentLoaded', calculate);
+    </script>
+</body>
+</html>

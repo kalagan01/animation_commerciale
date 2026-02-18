@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détail Partenaire - NeoImpact</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-wa-primary text-white sticky top-0 z-50 shadow-lg">
+        <div class="flex items-center justify-between px-4 py-4">
+            <a href="/static/partners-list-mobile.html" class="flex items-center space-x-2">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </a>
+            <!-- Logo NeoImpact -->
+                <div class="neoimpact-logo" style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
+                    <div class="logo-icon">
+                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="line-height: 1.2;">
+                        <div class="logo-arabic" style="font-size: 14px; font-weight: 600; color: #00A5A8;">وفاسلف</div>
+                        <div class="logo-latin" style="font-size: 10px; color: #6B6B6B; letter-spacing: 1px;">NeoImpact</div>
+                    </div>
+                </div>
+<h1 class="text-lg font-bold flex-1 text-center">Détail Partenaire</h1>
+            <button id="edit-btn" class="flex items-center justify-center">
+                <i class="fas fa-edit text-xl"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Partner Header -->
+    <div id="partner-header" class="bg-white px-4 py-5 border-b">
+        <!-- Will be populated -->
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="bg-white border-b sticky top-14 z-40">
+        <div class="flex overflow-x-auto no-scrollbar">
+            <button class="tab-btn active px-4 py-3 font-medium text-sm whitespace-nowrap border-b-2" data-tab="info">
+                <i class="fas fa-info-circle mr-1"></i>Informations
+            </button>
+            <button class="tab-btn px-4 py-3 font-medium text-sm whitespace-nowrap border-b-2" data-tab="contracts">
+                <i class="fas fa-file-contract mr-1"></i>Contrats
+            </button>
+            <button class="tab-btn px-4 py-3 font-medium text-sm whitespace-nowrap border-b-2" data-tab="performance">
+                <i class="fas fa-chart-line mr-1"></i>Performance
+            </button>
+            <button class="tab-btn px-4 py-3 font-medium text-sm whitespace-nowrap border-b-2" data-tab="contacts">
+                <i class="fas fa-users mr-1"></i>Contacts
+            </button>
+            <button class="tab-btn px-4 py-3 font-medium text-sm whitespace-nowrap border-b-2" data-tab="history">
+                <i class="fas fa-history mr-1"></i>Historique
+            </button>
+        </div>
+    </div>
+
+    <!-- Tab Contents -->
+    <div class="px-4 py-4 pb-20">
+        <!-- Info Tab -->
+        <div id="info-tab" class="tab-content">
+            <div class="bg-white rounded-lg shadow-md p-4 space-y-3">
+                <div class="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                        <span class="text-gray-500">Code:</span>
+                        <p id="info-code" class="font-medium text-gray-900">-</p>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">SIRET:</span>
+                        <p id="info-siret" class="font-medium text-gray-900">-</p>
+                    </div>
+                    <div class="col-span-2">
+                        <span class="text-gray-500">Type:</span>
+                        <p id="info-type" class="font-medium text-gray-900">-</p>
+                    </div>
+                    <div class="col-span-2">
+                        <span class="text-gray-500">Organisation:</span>
+                        <p id="info-organisation" class="font-medium text-gray-900">-</p>
+                    </div>
+                    <div class="col-span-2">
+                        <span class="text-gray-500">Territoire:</span>
+                        <p id="info-territory" class="font-medium text-gray-900">-</p>
+                    </div>
+                    <div class="col-span-2">
+                        <span class="text-gray-500">Adresse:</span>
+                        <p id="info-address" class="font-medium text-gray-900">-</p>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Téléphone:</span>
+                        <p id="info-phone" class="font-medium text-[#00A5A8]">-</p>
+                    </div>
+                    <div>
+                        <span class="text-gray-500">Email:</span>
+                        <p id="info-email" class="font-medium text-[#00A5A8] truncate">-</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contracts Tab -->
+        <div id="contracts-tab" class="tab-content hidden">
+            <div id="contracts-list" class="space-y-3">
+                <!-- Populated dynamically -->
+            </div>
+            <div id="no-contracts" class="text-center py-12 hidden">
+                <i class="fas fa-file-contract text-5xl text-gray-300 mb-3"></i>
+                <p class="text-gray-500">Aucun contrat</p>
+            </div>
+        </div>
+
+        <!-- Performance Tab -->
+        <div id="performance-tab" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-md p-4 space-y-4">
+                <div class="text-center">
+                    <div class="text-5xl font-bold text-wa-primary mb-2" id="perf-score">0%</div>
+                    <p class="text-gray-600 text-sm">Score de performance</p>
+                </div>
+                <div class="grid grid-cols-2 gap-3 text-sm">
+                    <div class="text-center p-3 bg-blue-50 rounded-lg">
+                        <p class="text-2xl font-bold text-[#00A5A8]" id="perf-dossiers">0</p>
+                        <p class="text-gray-600">Dossiers</p>
+                    </div>
+                    <div class="text-center p-3 bg-green-50 rounded-lg">
+                        <p class="text-2xl font-bold text-[#00A5A8]" id="perf-ca">0 MAD</p>
+                        <p class="text-gray-600">CA Généré</p>
+                    </div>
+                    <div class="text-center p-3 bg-yellow-50 rounded-lg">
+                        <p class="text-2xl font-bold text-yellow-600" id="perf-leads">0</p>
+                        <p class="text-gray-600">Leads actifs</p>
+                    </div>
+                    <div class="text-center p-3 bg-purple-50 rounded-lg">
+                        <p class="text-2xl font-bold text-purple-600" id="perf-visits">0</p>
+                        <p class="text-gray-600">Visites</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contacts Tab -->
+        <div id="contacts-tab" class="tab-content hidden">
+            <div id="contacts-list" class="space-y-3">
+                <!-- Populated dynamically -->
+            </div>
+            <div id="no-contacts" class="text-center py-12 hidden">
+                <i class="fas fa-user-friends text-5xl text-gray-300 mb-3"></i>
+                <p class="text-gray-500">Aucun contact</p>
+            </div>
+        </div>
+
+        <!-- History Tab -->
+        <div id="history-tab" class="tab-content hidden">
+            <div id="history-list" class="space-y-3">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t z-50">
+        <div class="grid grid-cols-4 h-16">
+            <a href="/static/dashboard-mobile.html" class="flex flex-col items-center justify-center text-gray-500">
+                <i class="fas fa-home text-xl"></i>
+                <span class="text-xs">Accueil</span>
+            </a>
+            <a href="/static/partners-list-mobile.html" class="flex flex-col items-center justify-center text-wa-primary border-t-2 border-wa-primary">
+                <i class="fas fa-users text-xl"></i>
+                <span class="text-xs font-medium">Partenaires</span>
+            </a>
+            <a href="/static/visits-mobile.html" class="flex flex-col items-center justify-center text-gray-500">
+                <i class="fas fa-route text-xl"></i>
+                <span class="text-xs">Visites</span>
+            </a>
+            <a href="/static/profile-mobile.html" class="flex flex-col items-center justify-center text-gray-500">
+                <i class="fas fa-user text-xl"></i>
+                <span class="text-xs">Profil</span>
+            </a>
+        </div>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script>
+        const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000' : window.location.origin;
+        let partnerId = null;
+        let partnerData = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            partnerId = new URLSearchParams(window.location.search).get('id');
+            if (!partnerId) {
+                window.location.href = '/static/partners-list-mobile.html';
+                return;
+            }
+            checkAuth();
+            loadPartner();
+            setupTabs();
+            document.getElementById('edit-btn').addEventListener('click', () => {
+                window.location.href = `/static/partner-form-mobile.html?id=${partnerId}`;
+            });
+        });
+
+        function checkAuth() {
+            if (!localStorage.getItem('access_token')) {
+                window.location.href = '/static/login-mobile.html';
+            }
+        }
+
+        function setupTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabName = btn.dataset.tab;
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active', 'text-wa-primary', 'border-wa-primary'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+                    btn.classList.add('active', 'text-wa-primary', 'border-wa-primary');
+                    document.getElementById(`${tabName}-tab`).classList.remove('hidden');
+                });
+            });
+        }
+
+        async function loadPartner() {
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await axios.get(`${API_BASE}/api/v1/partners/${partnerId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (response.data.success && response.data.data) {
+                    partnerData = response.data.data;
+                    renderPartnerHeader(partnerData);
+                    renderPartnerInfo(partnerData);
+                    renderContracts(partnerData.contracts || []);
+                    renderPerformance(partnerData.performance || {});
+                    renderContacts(partnerData.contacts || []);
+                    renderHistory(partnerData.history || []);
+                }
+            } catch (error) {
+                console.error('Erreur chargement partenaire:', error);
+                showAlert('Erreur lors du chargement', 'error');
+                if (error.response?.status === 401) {
+                    localStorage.removeItem('access_token');
+                    window.location.href = '/static/login-mobile.html';
+                }
+            }
+        }
+
+        function renderPartnerHeader(partner) {
+            const statusColors = { active: 'bg-green-100 text-green-800', inactive: 'bg-gray-100 text-gray-800', suspended: 'bg-red-100 text-red-800' };
+            const statusLabels = { active: 'Actif', inactive: 'Inactif', suspended: 'Suspendu' };
+            document.getElementById('partner-header').innerHTML = `
+                <div class="flex items-start justify-between">
+                    <div class="flex-1">
+                        <h2 class="text-xl font-bold text-gray-900 mb-1">${partner.name || 'N/A'}</h2>
+                        <p class="text-sm text-gray-600">${partner.code || 'N/A'}</p>
+                    </div>
+                    <span class="px-3 py-1 text-xs font-medium rounded-full ${statusColors[partner.status] || statusColors.inactive}">
+                        ${statusLabels[partner.status] || 'Inconnu'}
+                    </span>
+                </div>
+                <div class="flex items-center space-x-2 mt-3 text-sm text-gray-600">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${partner.city || 'N/A'}, ${partner.country || 'Maroc'}</span>
+                </div>
+            `;
+        }
+
+        function renderPartnerInfo(partner) {
+            document.getElementById('info-code').textContent = partner.code || 'N/A';
+            document.getElementById('info-siret').textContent = partner.siret || 'N/A';
+            document.getElementById('info-type').textContent = partner.type || 'N/A';
+            document.getElementById('info-organisation').textContent = partner.organisation?.name || 'N/A';
+            document.getElementById('info-territory').textContent = partner.territory?.name || 'N/A';
+            document.getElementById('info-address').textContent = partner.address || 'N/A';
+            document.getElementById('info-phone').textContent = partner.phone || 'N/A';
+            document.getElementById('info-email').textContent = partner.email || 'N/A';
+        }
+
+        function renderContracts(contracts) {
+            const container = document.getElementById('contracts-list');
+            const noContracts = document.getElementById('no-contracts');
+            if (!contracts.length) {
+                noContracts.classList.remove('hidden');
+                return;
+            }
+            container.innerHTML = contracts.map(contract => `
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <div class="flex items-start justify-between mb-2">
+                        <h4 class="font-bold text-gray-900">${contract.name || 'Contrat'}</h4>
+                        <span class="px-2 py-1 text-xs font-medium rounded-full ${contract.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                            ${contract.status === 'active' ? 'Actif' : 'Inactif'}
+                        </span>
+                    </div>
+                    <div class="text-sm text-gray-600 space-y-1">
+                        <p><i class="fas fa-calendar mr-2"></i>Début: ${formatDate(contract.start_date)}</p>
+                        <p><i class="fas fa-calendar mr-2"></i>Fin: ${formatDate(contract.end_date)}</p>
+                        <p><i class="fas fa-coins mr-2"></i>Montant: ${contract.amount || 0} MAD</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderPerformance(perf) {
+            document.getElementById('perf-score').textContent = `${Math.round(perf.performance_score || 0)}%`;
+            document.getElementById('perf-dossiers').textContent = perf.total_dossiers || 0;
+            document.getElementById('perf-ca').textContent = `${(perf.ca_generated || 0).toLocaleString('fr-FR')} MAD`;
+            document.getElementById('perf-leads').textContent = perf.active_leads || 0;
+            document.getElementById('perf-visits').textContent = perf.visits_count || 0;
+        }
+
+        function renderContacts(contacts) {
+            const container = document.getElementById('contacts-list');
+            const noContacts = document.getElementById('no-contacts');
+            if (!contacts.length) {
+                noContacts.classList.remove('hidden');
+                return;
+            }
+            container.innerHTML = contacts.map(contact => `
+                <div class="bg-white rounded-lg shadow-md p-4">
+                    <h4 class="font-bold text-gray-900 mb-1">${contact.name || 'N/A'}</h4>
+                    <p class="text-sm text-gray-600 mb-2">${contact.role || 'N/A'}</p>
+                    <div class="flex items-center space-x-4 text-sm">
+                        <a href="tel:${contact.phone}" class="text-[#00A5A8]"><i class="fas fa-phone mr-1"></i>${contact.phone || 'N/A'}</a>
+                        <a href="mailto:${contact.email}" class="text-[#00A5A8]"><i class="fas fa-envelope mr-1"></i>${contact.email || 'N/A'}</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderHistory(history) {
+            const container = document.getElementById('history-list');
+            container.innerHTML = history.length ? history.map(item => `
+                <div class="bg-white rounded-lg shadow-sm p-3 border-l-4 border-blue-500">
+                    <p class="text-sm font-medium text-gray-900">${item.action || 'Action'}</p>
+                    <p class="text-xs text-gray-600 mt-1">${formatDate(item.created_at)} - ${item.user || 'Système'}</p>
+                </div>
+            `).join('') : '<p class="text-center text-gray-500 py-8">Aucun historique</p>';
+        }
+
+        function formatDate(date) {
+            return date ? new Date(date).toLocaleDateString('fr-FR') : 'N/A';
+        }
+
+        function showAlert(message, type = 'info') {
+            const colors = { success: 'bg-green-500', error: 'bg-red-500', info: 'bg-blue-500' };
+            const div = document.createElement('div');
+            div.className = `fixed top-20 left-4 right-4 ${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg z-50`;
+            div.innerHTML = `<span>${message}</span><button onclick="this.parentElement.remove()" class="ml-4"><i class="fas fa-times"></i></button>`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 4000);
+        }
+    </script>
+</body>
+</html>

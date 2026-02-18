@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Mes Dossiers - NeoImpact</title>
+    <link href="/css/neoimpact-design-system.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #F5F5F5;
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0097A7 0%, #00BCD4 100%);
+            color: white;
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-title {
+            flex: 1;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .header-icon {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Search Bar */
+        .search-section {
+            background: white;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .search-bar {
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            border: 1px solid var(--color-border);
+            border-radius: 12px;
+            font-size: 14px;
+            background: #F5F5F5;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--color-text-secondary);
+        }
+
+        /* Filter Chips */
+        .filter-section {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid var(--color-border-light);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .filter-chips {
+            display: inline-flex;
+            gap: 8px;
+        }
+
+        .filter-chip {
+            background: #F5F5F5;
+            border: 1px solid var(--color-border);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .filter-chip.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            background: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .stats-item {
+            text-align: center;
+        }
+
+        .stats-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--color-dark);
+        }
+
+        .stats-label {
+            font-size: 11px;
+            color: var(--color-text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Dossiers List */
+        .dossiers-list {
+            padding: 16px 20px;
+        }
+
+        .dossier-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .dossier-card:active {
+            transform: scale(0.98);
+        }
+
+        .dossier-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .dossier-id {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            font-weight: 600;
+        }
+
+        .dossier-date {
+            font-size: 11px;
+            color: var(--color-text-disabled);
+        }
+
+        .dossier-client {
+            font-size: 16px;
+            font-weight: bold;
+            color: var(--color-dark);
+            margin-bottom: 8px;
+        }
+
+        .dossier-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .detail-item {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .dossier-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--color-border-light);
+        }
+
+        .dossier-amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--color-primary);
+        }
+
+        /* FAB Button */
+        .fab-btn {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #FFD600 0%, #FFC107 100%);
+            border: none;
+            box-shadow: 0 4px 12px rgba(255, 214, 0, 0.4);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: var(--color-dark);
+            z-index: 999;
+        }
+
+        .fab-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--color-border-light);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            text-decoration: none;
+            color: var(--color-text-secondary);
+            font-size: 11px;
+            padding: 8px;
+            transition: all 0.2s ease;
+            gap: 4px;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+        }
+
+        .nav-item.active {
+            color: var(--color-primary);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: var(--color-border);
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            color: var(--color-text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: var(--color-text-disabled);
+        }
+    </style>
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <button class="back-btn" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="header-title">Mes Dossiers</div>
+            <div class="header-actions">
+                <button class="header-icon">
+                    <i class="fas fa-filter"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-section">
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="Rechercher un dossier..." id="searchInput">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+    </div>
+
+    <!-- Filter Chips -->
+    <div class="filter-section">
+        <div class="filter-chips">
+            <button class="filter-chip active" data-status="all">Tous</button>
+            <button class="filter-chip" data-status="en_cours">En cours</button>
+            <button class="filter-chip" data-status="en_attente">En attente</button>
+            <button class="filter-chip" data-status="approuve">Approuvé</button>
+            <button class="filter-chip" data-status="rejete">Rejeté</button>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stats-item">
+            <div class="stats-value" id="totalDossiers">12</div>
+            <div class="stats-label">Total</div>
+        </div>
+        <div class="stats-item">
+            <div class="stats-value" id="enCours">3</div>
+            <div class="stats-label">En cours</div>
+        </div>
+        <div class="stats-item">
+            <div class="stats-value" id="approuves">8</div>
+            <div class="stats-label">Approuvés</div>
+        </div>
+        <div class="stats-item">
+            <div class="stats-value" id="rejetes">1</div>
+            <div class="stats-label">Rejetés</div>
+        </div>
+    </div>
+
+    <!-- Dossiers List -->
+    <div class="dossiers-list" id="dossiersList">
+        <!-- Will be populated by JavaScript -->
+    </div>
+
+    <!-- Empty State (hidden by default) -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+        <i class="fas fa-folder-open"></i>
+        <h3>Aucun dossier trouvé</h3>
+        <p>Créez votre premier dossier en cliquant sur le bouton +</p>
+    </div>
+
+    <!-- FAB Button -->
+    <button class="fab-btn" onclick="window.location.href='/dossier/new'">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="/dashboard-mobile.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
+        </a>
+        <a href="/dossiers-mobile.html" class="nav-item active">
+            <i class="fas fa-folder"></i>
+            <span>Dossiers</span>
+        </a>
+        <a href="/simulation-mobile.html" class="nav-item">
+            <i class="fas fa-calculator"></i>
+            <span>Simulation</span>
+        </a>
+        <a href="/statistics-mobile.html" class="nav-item">
+            <i class="fas fa-chart-bar"></i>
+            <span>Stats</span>
+        </a>
+        <a href="/profil-mobile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profil</span>
+        </a>
+    </div>
+
+    <script>
+        // Sample dossiers data
+        const sampleDossiers = [
+            {
+                id: 'DOS-2025-001',
+                client: 'Youssef Benali',
+                vehicle: 'Renault Clio',
+                amount: '120,000 MAD',
+                status: 'en_cours',
+                statusLabel: 'En cours',
+                date: '14/02/2025',
+                duration: '48 mois',
+                apport: '30,000 MAD'
+            },
+            {
+                id: 'DOS-2025-002',
+                client: 'Fatima Zahra El Amrani',
+                vehicle: 'Dacia Logan',
+                amount: '90,000 MAD',
+                status: 'en_attente',
+                statusLabel: 'En attente',
+                date: '13/02/2025',
+                duration: '36 mois',
+                apport: '20,000 MAD'
+            },
+            {
+                id: 'DOS-2025-003',
+                client: 'Karim Idrissi',
+                vehicle: 'Peugeot 208',
+                amount: '150,000 MAD',
+                status: 'approuve',
+                statusLabel: 'Approuvé',
+                date: '12/02/2025',
+                duration: '60 mois',
+                apport: '40,000 MAD'
+            },
+            {
+                id: 'DOS-2025-004',
+                client: 'Amina Tazi',
+                vehicle: 'Hyundai i10',
+                amount: '85,000 MAD',
+                status: 'en_cours',
+                statusLabel: 'En cours',
+                date: '11/02/2025',
+                duration: '36 mois',
+                apport: '25,000 MAD'
+            },
+            {
+                id: 'DOS-2025-005',
+                client: 'Hassan Bennani',
+                vehicle: 'Volkswagen Polo',
+                amount: '135,000 MAD',
+                status: 'approuve',
+                statusLabel: 'Approuvé',
+                date: '10/02/2025',
+                duration: '48 mois',
+                apport: '35,000 MAD'
+            }
+        ];
+
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        // Render dossiers
+        function renderDossiers() {
+            const container = document.getElementById('dossiersList');
+            const emptyState = document.getElementById('emptyState');
+            
+            let filteredDossiers = sampleDossiers;
+
+            // Apply status filter
+            if (currentFilter !== 'all') {
+                filteredDossiers = filteredDossiers.filter(d => d.status === currentFilter);
+            }
+
+            // Apply search filter
+            if (searchQuery) {
+                filteredDossiers = filteredDossiers.filter(d => 
+                    d.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    d.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    d.vehicle.toLowerCase().includes(searchQuery.toLowerCase())
+                );
+            }
+
+            if (filteredDossiers.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'block';
+            emptyState.style.display = 'none';
+
+            container.innerHTML = filteredDossiers.map(dossier => {
+                const badgeClass = {
+                    'en_cours': 'badge-info',
+                    'en_attente': 'badge-warning',
+                    'approuve': 'badge-success',
+                    'rejete': 'badge-danger'
+                }[dossier.status];
+
+                return `
+                    <a href="/dossier/${dossier.id}" class="dossier-card">
+                        <div class="dossier-header">
+                            <div class="dossier-id">${dossier.id}</div>
+                            <div class="dossier-date">${dossier.date}</div>
+                        </div>
+                        <div class="dossier-client">${dossier.client}</div>
+                        <div class="dossier-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Véhicule:</span><br>
+                                ${dossier.vehicle}
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Durée:</span><br>
+                                ${dossier.duration}
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Apport:</span><br>
+                                ${dossier.apport}
+                            </div>
+                        </div>
+                        <div class="dossier-footer">
+                            <div class="dossier-amount">${dossier.amount}</div>
+                            <span class="badge ${badgeClass}">${dossier.statusLabel}</span>
+                        </div>
+                    </a>
+                `;
+            }).join('');
+        }
+
+        // Filter chips event listeners
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.status;
+                renderDossiers();
+            });
+        });
+
+        // Search input event listener
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            searchQuery = e.target.value;
+            renderDossiers();
+        });
+
+        // Update stats
+        function updateStats() {
+            document.getElementById('totalDossiers').textContent = sampleDossiers.length;
+            document.getElementById('enCours').textContent = sampleDossiers.filter(d => d.status === 'en_cours').length;
+            document.getElementById('approuves').textContent = sampleDossiers.filter(d => d.status === 'approuve').length;
+            document.getElementById('rejetes').textContent = sampleDossiers.filter(d => d.status === 'rejete').length;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDossiers();
+            updateStats();
+        });
+    </script>
+</body>
+</html>

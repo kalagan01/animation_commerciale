@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Notifications - NeoImpact</title>
+    <link href="/css/neoimpact-design-system.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #F5F5F5;
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0097A7 0%, #00BCD4 100%);
+            color: white;
+            padding: 16px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-title {
+            flex: 1;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-icon {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
+            background: white;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--color-border-light);
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+        }
+
+        .filter-tab {
+            background: #F5F5F5;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .filter-tab.active {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        /* Notifications List */
+        .notifications-list {
+            padding: 16px 20px;
+        }
+
+        .notification-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            display: flex;
+            gap: 12px;
+        }
+
+        .notification-card.unread {
+            border-left: 4px solid var(--color-primary);
+        }
+
+        .notification-card:active {
+            transform: scale(0.98);
+        }
+
+        .notification-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.success {
+            background: #E8F5E9;
+            color: var(--color-success);
+        }
+
+        .notification-icon.warning {
+            background: #FFF9C4;
+            color: var(--color-warning);
+        }
+
+        .notification-icon.info {
+            background: #E0F7FA;
+            color: var(--color-primary);
+        }
+
+        .notification-icon.danger {
+            background: #FFEBEE;
+            color: var(--color-danger);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 4px;
+        }
+
+        .notification-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-dark);
+            margin-bottom: 4px;
+        }
+
+        .notification-time {
+            font-size: 11px;
+            color: var(--color-text-disabled);
+            white-space: nowrap;
+        }
+
+        .notification-message {
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .notification-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .notification-btn {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .notification-btn.primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .notification-btn.secondary {
+            background: #F5F5F5;
+            color: var(--color-text-secondary);
+        }
+
+        .unread-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            position: absolute;
+            top: 16px;
+            right: 16px;
+        }
+
+        /* Date Separator */
+        .date-separator {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-text-secondary);
+            margin: 24px 0 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: var(--color-border);
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            color: var(--color-text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: var(--color-text-disabled);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid var(--color-border-light);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            text-decoration: none;
+            color: var(--color-text-secondary);
+            font-size: 11px;
+            padding: 8px;
+            transition: all 0.2s ease;
+            gap: 4px;
+        }
+
+        .nav-item i {
+            font-size: 22px;
+        }
+
+        .nav-item.active {
+            color: var(--color-primary);
+        }
+    </style>
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-top">
+            <button class="back-btn" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <div class="header-title">Notifications</div>
+            <div class="header-actions">
+                <button class="header-icon" onclick="markAllAsRead()">
+                    <i class="fas fa-check-double"></i>
+                </button>
+                <button class="header-icon">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+        <button class="filter-tab active" data-filter="all">Toutes</button>
+        <button class="filter-tab" data-filter="unread">Non lues</button>
+        <button class="filter-tab" data-filter="dossiers">Dossiers</button>
+        <button class="filter-tab" data-filter="system">Système</button>
+        <button class="filter-tab" data-filter="messages">Messages</button>
+    </div>
+
+    <!-- Notifications List -->
+    <div class="notifications-list" id="notificationsList">
+        <!-- Will be populated by JavaScript -->
+    </div>
+
+    <!-- Empty State (hidden by default) -->
+    <div class="empty-state" id="emptyState" style="display: none;">
+        <i class="fas fa-bell"></i>
+        <h3>Aucune notification</h3>
+        <p>Vous êtes à jour !</p>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <a href="/dashboard-mobile.html" class="nav-item">
+            <i class="fas fa-home"></i>
+            <span>Accueil</span>
+        </a>
+        <a href="/dossiers-mobile.html" class="nav-item">
+            <i class="fas fa-folder"></i>
+            <span>Dossiers</span>
+        </a>
+        <a href="/simulation-mobile.html" class="nav-item">
+            <i class="fas fa-calculator"></i>
+            <span>Simulation</span>
+        </a>
+        <a href="/statistics-mobile.html" class="nav-item">
+            <i class="fas fa-chart-bar"></i>
+            <span>Stats</span>
+        </a>
+        <a href="/profil-mobile.html" class="nav-item">
+            <i class="fas fa-user"></i>
+            <span>Profil</span>
+        </a>
+    </div>
+
+    <script>
+        // Sample notifications data
+        const sampleNotifications = [
+            {
+                id: 1,
+                type: 'dossiers',
+                icon: 'success',
+                iconClass: 'fa-check-circle',
+                title: 'Dossier approuvé',
+                message: 'Le dossier DOS-2025-003 de Karim Idrissi a été approuvé',
+                time: '5 min',
+                unread: true,
+                date: 'today',
+                actions: [
+                    { label: 'Voir', type: 'primary', link: '/dossier/DOS-2025-003' }
+                ]
+            },
+            {
+                id: 2,
+                type: 'dossiers',
+                icon: 'warning',
+                iconClass: 'fa-exclamation-triangle',
+                title: 'Document manquant',
+                message: 'Le dossier DOS-2025-002 nécessite la fiche de paie',
+                time: '1 heure',
+                unread: true,
+                date: 'today',
+                actions: [
+                    { label: 'Ajouter', type: 'primary', link: '/dossier/DOS-2025-002/documents' }
+                ]
+            },
+            {
+                id: 3,
+                type: 'messages',
+                icon: 'info',
+                iconClass: 'fa-comment',
+                title: 'Nouveau message',
+                message: 'Hassan Bennis: "Merci de vérifier le dossier DOS-2025-001"',
+                time: '2 heures',
+                unread: true,
+                date: 'today',
+                actions: [
+                    { label: 'Répondre', type: 'primary', link: '/messages/1' }
+                ]
+            },
+            {
+                id: 4,
+                type: 'dossiers',
+                icon: 'info',
+                iconClass: 'fa-clock',
+                title: 'Rappel',
+                message: 'Rendez-vous client à 15:00 pour Fatima Zahra',
+                time: '3 heures',
+                unread: false,
+                date: 'today'
+            },
+            {
+                id: 5,
+                type: 'system',
+                icon: 'info',
+                iconClass: 'fa-bell',
+                title: 'Mise à jour système',
+                message: 'Une nouvelle version de l\'application est disponible',
+                time: 'Hier',
+                unread: false,
+                date: 'yesterday',
+                actions: [
+                    { label: 'Mettre à jour', type: 'primary', link: '#' }
+                ]
+            },
+            {
+                id: 6,
+                type: 'dossiers',
+                icon: 'success',
+                iconClass: 'fa-check',
+                title: 'Signature électronique',
+                message: 'Le contrat DOS-2025-005 a été signé électroniquement',
+                time: 'Hier',
+                unread: false,
+                date: 'yesterday'
+            },
+            {
+                id: 7,
+                type: 'dossiers',
+                icon: 'danger',
+                iconClass: 'fa-times-circle',
+                title: 'Dossier rejeté',
+                message: 'Le dossier DOS-2024-999 a été rejeté. Raison: Documents incomplets',
+                time: 'Il y a 2 jours',
+                unread: false,
+                date: 'older'
+            }
+        ];
+
+        let currentFilter = 'all';
+        let notifications = [...sampleNotifications];
+
+        // Render notifications
+        function renderNotifications() {
+            const container = document.getElementById('notificationsList');
+            const emptyState = document.getElementById('emptyState');
+            
+            let filteredNotifications = notifications;
+
+            // Apply filter
+            if (currentFilter === 'unread') {
+                filteredNotifications = filteredNotifications.filter(n => n.unread);
+            } else if (currentFilter !== 'all') {
+                filteredNotifications = filteredNotifications.filter(n => n.type === currentFilter);
+            }
+
+            if (filteredNotifications.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'block';
+            emptyState.style.display = 'none';
+
+            // Group by date
+            const grouped = {
+                today: [],
+                yesterday: [],
+                older: []
+            };
+
+            filteredNotifications.forEach(n => {
+                grouped[n.date].push(n);
+            });
+
+            let html = '';
+
+            if (grouped.today.length > 0) {
+                html += '<div class="date-separator">Aujourd\'hui</div>';
+                html += grouped.today.map(n => renderNotification(n)).join('');
+            }
+
+            if (grouped.yesterday.length > 0) {
+                html += '<div class="date-separator">Hier</div>';
+                html += grouped.yesterday.map(n => renderNotification(n)).join('');
+            }
+
+            if (grouped.older.length > 0) {
+                html += '<div class="date-separator">Plus ancien</div>';
+                html += grouped.older.map(n => renderNotification(n)).join('');
+            }
+
+            container.innerHTML = html;
+        }
+
+        // Render single notification
+        function renderNotification(notification) {
+            const actionsHtml = notification.actions ? notification.actions.map(action => 
+                `<button class="notification-btn ${action.type}" onclick="window.location.href='${action.link}'">${action.label}</button>`
+            ).join('') : '';
+
+            return `
+                <div class="notification-card ${notification.unread ? 'unread' : ''}" onclick="markAsRead(${notification.id})">
+                    ${notification.unread ? '<div class="unread-indicator"></div>' : ''}
+                    <div class="notification-icon ${notification.icon}">
+                        <i class="fas ${notification.iconClass}"></i>
+                    </div>
+                    <div class="notification-content">
+                        <div class="notification-header">
+                            <div class="notification-title">${notification.title}</div>
+                            <div class="notification-time">${notification.time}</div>
+                        </div>
+                        <div class="notification-message">${notification.message}</div>
+                        ${actionsHtml ? `<div class="notification-actions">${actionsHtml}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Mark notification as read
+        function markAsRead(id) {
+            const notification = notifications.find(n => n.id === id);
+            if (notification) {
+                notification.unread = false;
+                renderNotifications();
+            }
+        }
+
+        // Mark all as read
+        function markAllAsRead() {
+            notifications.forEach(n => n.unread = false);
+            renderNotifications();
+        }
+
+        // Filter tabs event listeners
+        document.querySelectorAll('.filter-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                renderNotifications();
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderNotifications();
+        });
+    </script>
+</body>
+</html>

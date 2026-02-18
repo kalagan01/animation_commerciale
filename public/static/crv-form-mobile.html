@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compte-Rendu Visite - NeoImpact</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-wa-primary text-white sticky top-0 z-50 shadow-lg">
+        <div class="flex items-center justify-between px-4 py-4">
+            <a href="/static/visits-mobile.html"><i class="fas fa-arrow-left text-xl"></i></a>
+            <!-- Logo NeoImpact -->
+                <div class="neoimpact-logo" style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
+                    <div class="logo-icon">
+                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="line-height: 1.2;">
+                        <div class="logo-arabic" style="font-size: 14px; font-weight: 600; color: #00A5A8;">وفاسلف</div>
+                        <div class="logo-latin" style="font-size: 10px; color: #6B6B6B; letter-spacing: 1px;">NeoImpact</div>
+                    </div>
+                </div>
+<h1 class="text-lg font-bold flex-1 text-center">Compte-Rendu Visite</h1>
+            <button id="save-draft-btn" class="text-sm"><i class="fas fa-save"></i></button>
+        </div>
+    </nav>
+
+    <form id="crv-form" class="px-4 py-4 space-y-4 pb-24">
+        <input type="hidden" id="visit-id" name="visit_id">
+        <input type="hidden" id="partner-id" name="partner_id">
+
+        <!-- Partner Info -->
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <h3 class="font-bold text-gray-900 mb-2">Informations Visite</h3>
+            <div id="visit-info" class="text-sm text-gray-600 space-y-1"></div>
+        </div>
+
+        <!-- Summary -->
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Résumé de la visite *</label>
+            <textarea id="summary" name="summary" rows="4" required
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-wa-primary"
+                placeholder="Décrivez les points clés de la visite..."></textarea>
+        </div>
+
+        <!-- Points Discussed -->
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Points Discutés</label>
+            <div id="points-list" class="space-y-2 mb-3"></div>
+            <div class="flex space-x-2">
+                <input type="text" id="new-point" placeholder="Ajouter un point..."
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                <button type="button" id="add-point-btn" class="px-4 py-2 bg-wa-primary text-white rounded-lg text-sm">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Action Items -->
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Actions à Suivre</label>
+            <div id="actions-list" class="space-y-2 mb-3"></div>
+            <div class="flex space-x-2">
+                <input type="text" id="new-action" placeholder="Ajouter une action..."
+                    class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                <button type="button" id="add-action-btn" class="px-4 py-2 bg-wa-primary text-white rounded-lg text-sm">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Rating -->
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <label class="block text-sm font-medium text-gray-700 mb-3">Évaluation de la visite *</label>
+            <div class="flex items-center justify-center space-x-2">
+                <button type="button" class="rating-btn w-12 h-12 border-2 border-gray-300 rounded-full text-xl" data-rating="1">😞</button>
+                <button type="button" class="rating-btn w-12 h-12 border-2 border-gray-300 rounded-full text-xl" data-rating="2">😐</button>
+                <button type="button" class="rating-btn w-12 h-12 border-2 border-gray-300 rounded-full text-xl" data-rating="3">🙂</button>
+                <button type="button" class="rating-btn w-12 h-12 border-2 border-gray-300 rounded-full text-xl" data-rating="4">😊</button>
+                <button type="button" class="rating-btn w-12 h-12 border-2 border-gray-300 rounded-full text-xl" data-rating="5">😄</button>
+            </div>
+            <input type="hidden" id="rating" name="rating" required>
+            <p id="rating-error" class="text-red-500 text-xs mt-2 hidden">Veuillez sélectionner une note</p>
+        </div>
+
+        <!-- Next Visit -->
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Prochaine Visite (optionnelle)</label>
+            <input type="date" id="next-visit-date" name="next_visit_date"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+        </div>
+
+        <!-- Attachments -->
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Photos / Documents</label>
+            <input type="file" id="attachments" multiple accept="image/*,.pdf"
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
+            <p class="text-xs text-gray-500 mt-1">JPG, PNG, PDF (max 5 fichiers)</p>
+        </div>
+
+        <!-- Submit Buttons -->
+        <div class="fixed bottom-0 left-0 right-0 bg-white border-t p-4 space-y-2">
+            <button type="button" id="submit-btn" class="w-full bg-wa-primary text-white py-3 rounded-lg font-medium">
+                <i class="fas fa-paper-plane mr-2"></i>Soumettre le CRV
+            </button>
+            <button type="button" id="draft-btn" class="w-full bg-gray-200 text-gray-700 py-3 rounded-lg font-medium">
+                <i class="fas fa-save mr-2"></i>Enregistrer comme brouillon
+            </button>
+        </div>
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script>
+        const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000' : window.location.origin;
+        let pointsDiscussed = [];
+        let actionItems = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuth();
+            loadVisitInfo();
+            setupEventListeners();
+        });
+
+        function checkAuth() {
+            if (!localStorage.getItem('access_token')) window.location.href = '/static/login-mobile.html';
+        }
+
+        async function loadVisitInfo() {
+            const visitId = new URLSearchParams(window.location.search).get('visit_id');
+            if (!visitId) {
+                alert('ID visite manquant');
+                window.location.href = '/static/visits-mobile.html';
+                return;
+            }
+
+            document.getElementById('visit-id').value = visitId;
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await axios.get(`${API_BASE}/api/v1/visits/${visitId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (response.data.success && response.data.data) {
+                    const visit = response.data.data;
+                    document.getElementById('partner-id').value = visit.partner_id;
+                    document.getElementById('visit-info').innerHTML = `
+                        <p><strong>Partenaire:</strong> ${visit.partner?.name || 'N/A'}</p>
+                        <p><strong>Date:</strong> ${formatDate(visit.scheduled_date)}</p>
+                        <p><strong>Type:</strong> ${visit.visit_type || 'N/A'}</p>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erreur chargement visite:', error);
+            }
+        }
+
+        function setupEventListeners() {
+            // Rating buttons
+            document.querySelectorAll('.rating-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelectorAll('.rating-btn').forEach(b => {
+                        b.classList.remove('border-wa-primary', 'bg-wa-primary', 'text-white');
+                        b.classList.add('border-gray-300');
+                    });
+                    btn.classList.remove('border-gray-300');
+                    btn.classList.add('border-wa-primary', 'bg-wa-primary', 'text-white');
+                    document.getElementById('rating').value = btn.dataset.rating;
+                    document.getElementById('rating-error').classList.add('hidden');
+                });
+            });
+
+            // Add point
+            document.getElementById('add-point-btn').addEventListener('click', () => {
+                const input = document.getElementById('new-point');
+                if (input.value.trim()) {
+                    pointsDiscussed.push(input.value.trim());
+                    renderPoints();
+                    input.value = '';
+                }
+            });
+
+            // Add action
+            document.getElementById('add-action-btn').addEventListener('click', () => {
+                const input = document.getElementById('new-action');
+                if (input.value.trim()) {
+                    actionItems.push({ title: input.value.trim(), completed: false });
+                    renderActions();
+                    input.value = '';
+                }
+            });
+
+            // Submit
+            document.getElementById('submit-btn').addEventListener('click', () => submitCRV('submitted'));
+            document.getElementById('draft-btn').addEventListener('click', () => submitCRV('draft'));
+            document.getElementById('save-draft-btn').addEventListener('click', () => submitCRV('draft'));
+        }
+
+        function renderPoints() {
+            const container = document.getElementById('points-list');
+            container.innerHTML = pointsDiscussed.map((point, i) => `
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <span class="text-sm">${point}</span>
+                    <button type="button" onclick="removePoint(${i})" class="text-red-500 text-sm">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function renderActions() {
+            const container = document.getElementById('actions-list');
+            container.innerHTML = actionItems.map((action, i) => `
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                    <span class="text-sm">${action.title}</span>
+                    <button type="button" onclick="removeAction(${i})" class="text-red-500 text-sm">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removePoint(index) {
+            pointsDiscussed.splice(index, 1);
+            renderPoints();
+        }
+
+        function removeAction(index) {
+            actionItems.splice(index, 1);
+            renderActions();
+        }
+
+        async function submitCRV(status) {
+            const summary = document.getElementById('summary').value.trim();
+            const rating = document.getElementById('rating').value;
+
+            if (!summary) {
+                alert('Le résumé est obligatoire');
+                return;
+            }
+
+            if (status === 'submitted' && !rating) {
+                document.getElementById('rating-error').classList.remove('hidden');
+                return;
+            }
+
+            const data = {
+                visit_id: document.getElementById('visit-id').value,
+                partner_id: document.getElementById('partner-id').value,
+                summary: summary,
+                points_discussed: pointsDiscussed,
+                action_items: actionItems,
+                rating: parseInt(rating) || null,
+                next_visit_date: document.getElementById('next-visit-date').value || null,
+                status: status,
+                attachments: [] // TODO: Handle file upload
+            };
+
+            try {
+                const token = localStorage.getItem('access_token');
+                const response = await axios.post(`${API_BASE}/api/v1/crv`, data, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+
+                if (response.data.success) {
+                    showAlert(status === 'submitted' ? 'CRV soumis avec succès !' : 'Brouillon enregistré', 'success');
+                    setTimeout(() => window.location.href = '/static/visits-mobile.html', 1500);
+                }
+            } catch (error) {
+                console.error('Erreur soumission CRV:', error);
+                showAlert('Erreur lors de la soumission', 'error');
+            }
+        }
+
+        function formatDate(date) {
+            return date ? new Date(date).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'N/A';
+        }
+
+        function showAlert(message, type = 'info') {
+            const colors = { success: 'bg-green-500', error: 'bg-red-500', info: 'bg-blue-500' };
+            const div = document.createElement('div');
+            div.className = `fixed top-20 left-4 right-4 ${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg z-50`;
+            div.innerHTML = `<span>${message}</span>`;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

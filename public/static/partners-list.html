@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partenaires - CRM NeoImpact</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <!-- Logo NeoImpact -->
+                <div class="neoimpact-logo" style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
+                    <div class="logo-icon">
+                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="line-height: 1.2;">
+                        <div class="logo-arabic" style="font-size: 14px; font-weight: 600; color: #00A5A8;">وفاسلف</div>
+                        <div class="logo-latin" style="font-size: 10px; color: #6B6B6B; letter-spacing: 1px;">NeoImpact</div>
+                    </div>
+                </div>
+<h1 class="text-xl font-bold text-gray-900">
+                        <i class="fas fa-handshake text-[#00A5A8] mr-2"></i>
+                        Gestion Partenaires
+                    </h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="exportData()" class="text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-download mr-1"></i> Exporter
+                    </button>
+                    <a href="/static/dashboard.html" class="text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-arrow-left mr-1"></i> Dashboard
+                    </a>
+                    <div id="user-info" class="flex items-center"></div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header Actions -->
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Partenaires</h2>
+                <p class="text-gray-600 mt-1">Gérer le référentiel partenaires</p>
+            </div>
+            <button onclick="openCreateModal()" class="bg-[#00A5A8] hover:bg-blue-700 text-white px-6 py-3 rounded-lg flex items-center font-semibold shadow-lg">
+                <i class="fas fa-plus mr-2"></i>
+                Nouveau Partenaire
+            </button>
+        </div>
+
+        <!-- Stats Cards -->
+        <div id="stats-cards" class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+            <!-- Stats loaded dynamically -->
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-search mr-1"></i> Recherche
+                    </label>
+                    <input type="text" id="search" placeholder="Nom, code, contact..." 
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-map-marker-alt mr-1"></i> Ville
+                    </label>
+                    <select id="filter-city" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Toutes</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-tag mr-1"></i> Marque
+                    </label>
+                    <select id="filter-brand" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Toutes</option>
+                        <option value="neoimpact">NeoImpact</option>
+                        <option value="dar">Dar</option>
+                        <option value="salaf">Salaf</option>
+                        <option value="other">Autre</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-toggle-on mr-1"></i> Statut
+                    </label>
+                    <select id="filter-status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Tous</option>
+                        <option value="active">Actif</option>
+                        <option value="inactive">Inactif</option>
+                        <option value="prospect">Prospect</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-shapes mr-1"></i> Type
+                    </label>
+                    <select id="filter-type" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Tous</option>
+                        <option value="store">Magasin</option>
+                        <option value="agent">Agent</option>
+                        <option value="branch">Agence</option>
+                        <option value="other">Autre</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-map mr-1"></i> Territoire
+                    </label>
+                    <select id="filter-territory" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="">Tous</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-sort mr-1"></i> Trier par
+                    </label>
+                    <select id="sort-by" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="created_at">Date création</option>
+                        <option value="name">Nom</option>
+                        <option value="performance_score">Performance</option>
+                        <option value="city">Ville</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-arrow-down mr-1"></i> Ordre
+                    </label>
+                    <select id="sort-order" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                        <option value="desc">Décroissant</option>
+                        <option value="asc">Croissant</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end mt-4 space-x-2">
+                <button onclick="resetFilters()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                    <i class="fas fa-redo mr-1"></i> Réinitialiser
+                </button>
+                <button onclick="applyFilters()" class="px-4 py-2 bg-[#00A5A8] text-white rounded-lg hover:bg-blue-700">
+                    <i class="fas fa-filter mr-1"></i> Appliquer
+                </button>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Partenaire
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Contact
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Localisation
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Type / Marque
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Performance
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Statut
+                            </th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="partners-tbody" class="bg-white divide-y divide-gray-200">
+                        <tr id="loading-row">
+                            <td colspan="7" class="px-6 py-12 text-center">
+                                <i class="fas fa-spinner fa-spin text-3xl text-[#00A5A8] mb-4"></i>
+                                <p class="text-gray-600">Chargement des partenaires...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="bg-gray-50 px-6 py-4 flex items-center justify-between border-t border-gray-200">
+                <div class="text-sm text-gray-700">
+                    Affichage <span id="showing-from">0</span> à <span id="showing-to">0</span> sur <span id="showing-total">0</span> partenaires
+                </div>
+                <div class="flex space-x-2">
+                    <button id="prev-btn" onclick="previousPage()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-white disabled:opacity-50">
+                        <i class="fas fa-chevron-left"></i> Précédent
+                    </button>
+                    <span id="page-info" class="px-4 py-2 text-gray-700"></span>
+                    <button id="next-btn" onclick="nextPage()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-white disabled:opacity-50">
+                        Suivant <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Create/Edit -->
+    <div id="modal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-8 border w-full max-w-3xl shadow-lg rounded-lg bg-white">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="modal-title" class="text-2xl font-bold text-gray-900">Nouveau Partenaire</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+
+            <form id="partner-form" class="space-y-6">
+                <input type="hidden" id="partner-id">
+                
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Code *</label>
+                        <input type="text" id="code" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Type *</label>
+                        <select id="type" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Sélectionner...</option>
+                            <option value="store">Magasin</option>
+                            <option value="agent">Agent</option>
+                            <option value="branch">Agence</option>
+                            <option value="other">Autre</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nom *</label>
+                    <input type="text" id="name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Marque</label>
+                        <select id="brand" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Sélectionner...</option>
+                            <option value="neoimpact">NeoImpact</option>
+                            <option value="dar">Dar</option>
+                            <option value="salaf">Salaf</option>
+                            <option value="other">Autre</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Territoire</label>
+                        <select id="territory_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="">Sélectionner...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Adresse</label>
+                    <textarea id="address" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Ville</label>
+                        <input type="text" id="city" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Code Postal</label>
+                        <input type="text" id="postal_code" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Statut</label>
+                        <select id="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                            <option value="active">Actif</option>
+                            <option value="inactive">Inactif</option>
+                            <option value="prospect">Prospect</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
+                        <input type="tel" id="phone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Personne de contact</label>
+                    <input type="text" id="contact_person" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="flex justify-end space-x-4 pt-6 border-t">
+                    <button type="button" onclick="closeModal()" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                        Annuler
+                    </button>
+                    <button type="submit" class="px-6 py-2 bg-[#00A5A8] hover:bg-blue-700 text-white rounded-lg flex items-center">
+                        <i class="fas fa-save mr-2"></i>
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script>
+        // API Configuration
+        const API_BASE = window.location.hostname.includes('sandbox.novita.ai') 
+            ? window.location.protocol + '//' + window.location.hostname.replace('8080-', '3000-')
+            : 'http://localhost:3000';
+
+        let currentPage = 1;
+        let currentData = [];
+        let token = localStorage.getItem('auth_token');
+
+        // Check auth
+        if (!token) {
+            window.location.href = '/static/login-mobile.html';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadUserInfo();
+            loadTerritories();
+            loadPartners();
+            loadStats();
+            
+            // Event listeners
+            document.getElementById('search').addEventListener('input', debounce(applyFilters, 500));
+            document.getElementById('partner-form').addEventListener('submit', handleSubmit);
+        });
+
+        async function loadUserInfo() {
+            try {
+                const response = await axios.get(`${API_BASE}/api/v1/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const user = response.data.data;
+                document.getElementById('user-info').innerHTML = `
+                    <span class="text-sm text-gray-600">${user.first_name} ${user.last_name}</span>
+                `;
+            } catch (error) {
+                console.error('Error loading user:', error);
+                if (error.response?.status === 401) {
+                    localStorage.removeItem('auth_token');
+                    window.location.href = '/static/login-mobile.html';
+                }
+            }
+        }
+
+        async function loadTerritories() {
+            try {
+                const response = await axios.get(`${API_BASE}/api/v1/territories?limit=100`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const territories = response.data.data;
+                
+                const filterSelect = document.getElementById('filter-territory');
+                const formSelect = document.getElementById('territory_id');
+                
+                territories.forEach(t => {
+                    filterSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+                    formSelect.innerHTML += `<option value="${t.id}">${t.name}</option>`;
+                });
+            } catch (error) {
+                console.error('Error loading territories:', error);
+            }
+        }
+
+        async function loadPartners() {
+            try {
+                const search = document.getElementById('search').value;
+                const city = document.getElementById('filter-city').value;
+                const brand = document.getElementById('filter-brand').value;
+                const status = document.getElementById('filter-status').value;
+                const type = document.getElementById('filter-type').value;
+                const territory_id = document.getElementById('filter-territory').value;
+                const sort_by = document.getElementById('sort-by').value;
+                const sort_order = document.getElementById('sort-order').value;
+
+                let url = `${API_BASE}/api/v1/partners?page=${currentPage}&limit=20`;
+                if (search) url += `&search=${encodeURIComponent(search)}`;
+                if (city) url += `&city=${encodeURIComponent(city)}`;
+                if (brand) url += `&brand=${brand}`;
+                if (status) url += `&status=${status}`;
+                if (type) url += `&type=${type}`;
+                if (territory_id) url += `&territory_id=${territory_id}`;
+                url += `&sort_by=${sort_by}&sort_order=${sort_order}`;
+
+                const response = await axios.get(url, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                currentData = response.data.data;
+                renderTable(currentData);
+                updatePagination(response.data.pagination);
+            } catch (error) {
+                console.error('Error loading partners:', error);
+                showError('Erreur lors du chargement des partenaires');
+            }
+        }
+
+        async function loadStats() {
+            try {
+                const response = await axios.get(`${API_BASE}/api/v1/partners/stats`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const stats = response.data.data;
+                
+                document.getElementById('stats-cards').innerHTML = `
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">Total</p>
+                                <p class="text-2xl font-bold text-gray-900">${stats.total}</p>
+                            </div>
+                            <i class="fas fa-handshake text-2xl text-[#00A5A8]"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">Actifs</p>
+                                <p class="text-2xl font-bold text-[#00A5A8]">${stats.by_status.active || 0}</p>
+                            </div>
+                            <i class="fas fa-check-circle text-2xl text-[#00A5A8]"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">Prospects</p>
+                                <p class="text-2xl font-bold text-yellow-600">${stats.by_status.prospect || 0}</p>
+                            </div>
+                            <i class="fas fa-star text-2xl text-yellow-600"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">NeoImpact</p>
+                                <p class="text-2xl font-bold text-purple-600">${stats.by_brand.neoimpact || 0}</p>
+                            </div>
+                            <i class="fas fa-building text-2xl text-purple-600"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-gray-600">Magasins</p>
+                                <p class="text-2xl font-bold text-indigo-600">${stats.by_type.store || 0}</p>
+                            </div>
+                            <i class="fas fa-store text-2xl text-indigo-600"></i>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('partners-tbody');
+            
+            if (!data || data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                            <i class="fas fa-handshake text-4xl mb-4"></i>
+                            <p>Aucun partenaire trouvé</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = data.map(partner => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-${partner.type === 'store' ? 'store' : 'user-tie'} text-[#00A5A8]"></i>
+                            </div>
+                            <div class="ml-4">
+                                <div class="text-sm font-medium text-gray-900">${partner.name}</div>
+                                <div class="text-sm text-gray-500">${partner.code}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-900">${partner.contact_person || '-'}</div>
+                        <div class="text-sm text-gray-500">${partner.phone || '-'}</div>
+                        <div class="text-sm text-gray-500">${partner.email || '-'}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm text-gray-900">
+                            <i class="fas fa-map-marker-alt mr-1"></i>${partner.city || '-'}
+                        </div>
+                        <div class="text-sm text-gray-500">${partner.address || '-'}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="text-sm">
+                            <span class="px-2 py-1 text-xs rounded-full ${getTypeBadge(partner.type)}">
+                                ${getTypeLabel(partner.type)}
+                            </span>
+                        </div>
+                        <div class="text-sm mt-1">
+                            <span class="px-2 py-1 text-xs rounded-full ${getBrandBadge(partner.brand)}">
+                                ${partner.brand || '-'}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        ${partner.performance_score ? `
+                            <div class="flex items-center">
+                                <div class="flex-1 bg-gray-200 rounded-full h-2 mr-2">
+                                    <div class="bg-green-500 h-2 rounded-full" style="width: ${partner.performance_score}%"></div>
+                                </div>
+                                <span class="text-sm font-medium">${partner.performance_score}%</span>
+                            </div>
+                        ` : '<span class="text-gray-400">-</span>'}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs rounded-full ${getStatusBadge(partner.status)}">
+                            ${getStatusLabel(partner.status)}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right text-sm font-medium space-x-2">
+                        <a href="/static/partner-detail.html?id=${partner.id}" class="text-[#00A5A8] hover:text-blue-900">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <button onclick="editPartner('${partner.id}')" class="text-indigo-600 hover:text-indigo-900">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deletePartner('${partner.id}')" class="text-red-600 hover:text-red-900">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getTypeBadge(type) {
+            const badges = {
+                store: 'bg-blue-100 text-blue-800',
+                agent: 'bg-green-100 text-green-800',
+                branch: 'bg-purple-100 text-purple-800',
+                other: 'bg-gray-100 text-gray-800'
+            };
+            return badges[type] || badges.other;
+        }
+
+        function getTypeLabel(type) {
+            const labels = {
+                store: 'Magasin',
+                agent: 'Agent',
+                branch: 'Agence',
+                other: 'Autre'
+            };
+            return labels[type] || type;
+        }
+
+        function getBrandBadge(brand) {
+            const badges = {
+                neoimpact: 'bg-purple-100 text-purple-800',
+                dar: 'bg-blue-100 text-blue-800',
+                salaf: 'bg-green-100 text-green-800',
+                other: 'bg-gray-100 text-gray-800'
+            };
+            return badges[brand] || badges.other;
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                active: 'bg-green-100 text-green-800',
+                inactive: 'bg-gray-100 text-gray-800',
+                prospect: 'bg-yellow-100 text-yellow-800'
+            };
+            return badges[status] || badges.inactive;
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                active: 'Actif',
+                inactive: 'Inactif',
+                prospect: 'Prospect'
+            };
+            return labels[status] || status;
+        }
+
+        function updatePagination(pagination) {
+            document.getElementById('showing-from').textContent = pagination.total > 0 ? ((pagination.page - 1) * pagination.limit + 1) : 0;
+            document.getElementById('showing-to').textContent = Math.min(pagination.page * pagination.limit, pagination.total);
+            document.getElementById('showing-total').textContent = pagination.total;
+            document.getElementById('page-info').textContent = `Page ${pagination.page} / ${pagination.pages}`;
+            
+            document.getElementById('prev-btn').disabled = !pagination.has_prev;
+            document.getElementById('next-btn').disabled = !pagination.has_next;
+        }
+
+        function applyFilters() {
+            currentPage = 1;
+            loadPartners();
+        }
+
+        function resetFilters() {
+            document.getElementById('search').value = '';
+            document.getElementById('filter-city').value = '';
+            document.getElementById('filter-brand').value = '';
+            document.getElementById('filter-status').value = '';
+            document.getElementById('filter-type').value = '';
+            document.getElementById('filter-territory').value = '';
+            document.getElementById('sort-by').value = 'created_at';
+            document.getElementById('sort-order').value = 'desc';
+            applyFilters();
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                loadPartners();
+            }
+        }
+
+        function nextPage() {
+            currentPage++;
+            loadPartners();
+        }
+
+        function openCreateModal() {
+            document.getElementById('modal-title').textContent = 'Nouveau Partenaire';
+            document.getElementById('partner-form').reset();
+            document.getElementById('partner-id').value = '';
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        async function editPartner(id) {
+            try {
+                const response = await axios.get(`${API_BASE}/api/v1/partners/${id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const partner = response.data.data;
+
+                document.getElementById('modal-title').textContent = 'Modifier Partenaire';
+                document.getElementById('partner-id').value = partner.id;
+                document.getElementById('code').value = partner.code;
+                document.getElementById('name').value = partner.name;
+                document.getElementById('type').value = partner.type || '';
+                document.getElementById('brand').value = partner.brand || '';
+                document.getElementById('territory_id').value = partner.territory_id || '';
+                document.getElementById('address').value = partner.address || '';
+                document.getElementById('city').value = partner.city || '';
+                document.getElementById('postal_code').value = partner.postal_code || '';
+                document.getElementById('phone').value = partner.phone || '';
+                document.getElementById('email').value = partner.email || '';
+                document.getElementById('contact_person').value = partner.contact_person || '';
+                document.getElementById('status').value = partner.status;
+                document.getElementById('modal').classList.remove('hidden');
+            } catch (error) {
+                showError('Erreur lors du chargement du partenaire');
+            }
+        }
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+
+            const id = document.getElementById('partner-id').value;
+            const data = {
+                code: document.getElementById('code').value,
+                name: document.getElementById('name').value,
+                type: document.getElementById('type').value,
+                brand: document.getElementById('brand').value,
+                territory_id: document.getElementById('territory_id').value || null,
+                address: document.getElementById('address').value,
+                city: document.getElementById('city').value,
+                postal_code: document.getElementById('postal_code').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                contact_person: document.getElementById('contact_person').value,
+                status: document.getElementById('status').value
+            };
+
+            try {
+                if (id) {
+                    await axios.patch(`${API_BASE}/api/v1/partners/${id}`, data, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    showSuccess('Partenaire mis à jour avec succès');
+                } else {
+                    await axios.post(`${API_BASE}/api/v1/partners`, data, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    showSuccess('Partenaire créé avec succès');
+                }
+                closeModal();
+                loadPartners();
+                loadStats();
+            } catch (error) {
+                showError(error.response?.data?.error || 'Erreur lors de l\'enregistrement');
+            }
+        }
+
+        async function deletePartner(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce partenaire ?')) return;
+
+            try {
+                await axios.delete(`${API_BASE}/api/v1/partners/${id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                showSuccess('Partenaire supprimé');
+                loadPartners();
+                loadStats();
+            } catch (error) {
+                showError('Erreur lors de la suppression');
+            }
+        }
+
+        function exportData() {
+            showSuccess('Export en cours...');
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function() {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, arguments), wait);
+            };
+        }
+
+        function showSuccess(message) {
+            alert(message);
+        }
+
+        function showError(message) {
+            alert('Erreur: ' + message);
+        }
+    </script>
+</body>
+</html>

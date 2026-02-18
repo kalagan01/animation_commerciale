@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparatif Solutions Animation Commerciale - Market Leaders vs NeoImpact V2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body class="bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg shadow-xl p-8 mb-8">
+            <!-- Logo NeoImpact -->
+                <div class="neoimpact-logo" style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
+                    <div class="logo-icon">
+                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="line-height: 1.2;">
+                        <div class="logo-arabic" style="font-size: 14px; font-weight: 600; color: #00A5A8;">وفاسلف</div>
+                        <div class="logo-latin" style="font-size: 10px; color: #6B6B6B; letter-spacing: 1px;">NeoImpact</div>
+                    </div>
+                </div>
+<h1 class="text-4xl font-bold mb-4">
+                <i class="fas fa-trophy mr-3"></i>
+                Comparatif Solutions Animation Commerciale
+            </h1>
+            <p class="text-xl text-blue-100">
+                Market Leaders vs NeoImpact V2.0 – Analyse 2026
+            </p>
+        </div>
+
+        <!-- Résumé Exécutif -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-green-500">
+                <div class="text-[#00A5A8] text-3xl font-bold mb-2">-60% à -85%</div>
+                <div class="text-gray-600">Prix vs Leaders</div>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-blue-500">
+                <div class="text-[#00A5A8] text-3xl font-bold mb-2">10x</div>
+                <div class="text-gray-600">Plus rapide (déploiement)</div>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-purple-500">
+                <div class="text-purple-600 text-3xl font-bold mb-2">23x ROI</div>
+                <div class="text-gray-600">Retour sur investissement</div>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-6 border-l-4 border-orange-500">
+                <div class="text-orange-600 text-3xl font-bold mb-2">95%</div>
+                <div class="text-gray-600">Fonctionnalités leaders</div>
+            </div>
+        </div>
+
+        <!-- Tableau Comparatif Principal -->
+        <div class="bg-white rounded-lg shadow-xl overflow-hidden mb-8">
+            <div class="bg-gray-800 text-white p-4">
+                <h2 class="text-2xl font-bold">
+                    <i class="fas fa-chart-bar mr-2"></i>
+                    Comparatif Détaillé des Solutions
+                </h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th class="px-6 py-4 text-left font-semibold text-gray-700">Critère</th>
+                            <th class="px-6 py-4 text-center font-semibold text-gray-700">Salesforce<br/>Automotive</th>
+                            <th class="px-6 py-4 text-center font-semibold text-gray-700">Microsoft<br/>Dynamics 365</th>
+                            <th class="px-6 py-4 text-center font-semibold text-gray-700">MotorK<br/>LeadSparK</th>
+                            <th class="px-6 py-4 text-center font-semibold text-gray-700">VinSolutions</th>
+                            <th class="px-6 py-4 text-center font-semibold text-green-700 bg-green-50">
+                                <i class="fas fa-crown text-yellow-500 mr-2"></i>
+                                NeoImpact V2.0
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <!-- Prix -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-semibold">💰 Prix/User/Mois</td>
+                            <td class="px-6 py-4 text-center">$60-200</td>
+                            <td class="px-6 py-4 text-center">$50-150</td>
+                            <td class="px-6 py-4 text-center">$40-100</td>
+                            <td class="px-6 py-4 text-center">$80-150</td>
+                            <td class="px-6 py-4 text-center bg-green-50 font-bold text-green-700">$15-30</td>
+                        </tr>
+                        <!-- Setup -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-semibold">🚀 Coût Setup</td>
+                            <td class="px-6 py-4 text-center">$30k-100k</td>
+                            <td class="px-6 py-4 text-center">$20k-80k</td>
+                            <td class="px-6 py-4 text-center">$10k-30k</td>
+                            <td class="px-6 py-4 text-center">$15k-40k</td>
+                            <td class="px-6 py-4 text-center bg-green-50 font-bold text-green-700">$0</td>
+                        </tr>
+                        <!-- Déploiement -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-semibold">⏱️ Déploiement</td>
+                            <td class="px-6 py-4 text-center">3-12 mois</td>
+                            <td class="px-6 py-4 text-center">3-9 mois</td>
+                            <td class="px-6 py-4 text-center">2-6 mois</td>
+                            <td class="px-6 py-4 text-center">3-8 mois</td>
+                            <td class="px-6 py-4 text-center bg-green-50 font-bold text-green-700">2-4 semaines</td>
+                        </tr>
+                        <!-- Intelligence Artificielle -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-semibold">🤖 IA Lead Scoring</td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-minus text-gray-400 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center bg-green-50"><i class="fas fa-check text-[#00A5A8] text-xl font-bold"></i></td>
+                        </tr>
+                        <!-- Prédictions -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-semibold">📈 Prédictions Churn</td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-minus text-gray-400 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-minus text-gray-400 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center bg-green-50"><i class="fas fa-check text-[#00A5A8] text-xl font-bold"></i></td>
+                        </tr>
+                        <!-- Gamification -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-semibold">🎮 Gamification</td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-minus text-gray-400 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-minus text-gray-400 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center bg-green-50"><i class="fas fa-check text-[#00A5A8] text-xl font-bold"></i></td>
+                        </tr>
+                        <!-- Mode Offline -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-semibold">📱 Mode Offline</td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-minus text-gray-400 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center bg-green-50"><i class="fas fa-check text-[#00A5A8] text-xl font-bold"></i></td>
+                        </tr>
+                        <!-- Routes GPS -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-semibold">🗺️ Routes GPS Auto</td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-minus text-gray-400 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-minus text-gray-400 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center bg-green-50"><i class="fas fa-check text-[#00A5A8] text-xl font-bold"></i></td>
+                        </tr>
+                        <!-- Commissions -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-semibold">💸 Commissions Auto</td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-minus text-gray-400 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center bg-green-50"><i class="fas fa-check text-[#00A5A8] text-xl font-bold"></i></td>
+                        </tr>
+                        <!-- WhatsApp -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-semibold">💬 WhatsApp Business</td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-check text-green-500 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-minus text-gray-400 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-minus text-gray-400 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center"><i class="fas fa-minus text-gray-400 text-xl"></i></td>
+                            <td class="px-6 py-4 text-center bg-green-50"><i class="fas fa-check text-[#00A5A8] text-xl font-bold"></i></td>
+                        </tr>
+                        <!-- Personnalisation -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-semibold">🎨 Personnalisation</td>
+                            <td class="px-6 py-4 text-center">Limitée</td>
+                            <td class="px-6 py-4 text-center">Moyenne</td>
+                            <td class="px-6 py-4 text-center">Limitée</td>
+                            <td class="px-6 py-4 text-center">Limitée</td>
+                            <td class="px-6 py-4 text-center bg-green-50 font-bold text-green-700">Illimitée</td>
+                        </tr>
+                        <!-- Performance -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-semibold">⚡ Performance</td>
+                            <td class="px-6 py-4 text-center">Cloud standard</td>
+                            <td class="px-6 py-4 text-center">Azure global</td>
+                            <td class="px-6 py-4 text-center">Cloud standard</td>
+                            <td class="px-6 py-4 text-center">Cloud US</td>
+                            <td class="px-6 py-4 text-center bg-green-50 font-bold text-green-700">Edge (CF)</td>
+                        </tr>
+                        <!-- Marché -->
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 font-semibold">🌍 Marché Cible</td>
+                            <td class="px-6 py-4 text-center">Global Enterprise</td>
+                            <td class="px-6 py-4 text-center">Global Mid-Large</td>
+                            <td class="px-6 py-4 text-center">Europe Auto</td>
+                            <td class="px-6 py-4 text-center">USA Auto</td>
+                            <td class="px-6 py-4 text-center bg-green-50 font-bold text-green-700">Maroc + Afrique</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Graphiques Comparatifs -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <!-- Coût Total Possession 18 mois (50 users) -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-bold mb-4">
+                    <i class="fas fa-dollar-sign mr-2 text-[#00A5A8]"></i>
+                    Coût Total 18 mois (50 users)
+                </h3>
+                <canvas id="costChart"></canvas>
+            </div>
+
+            <!-- Score Fonctionnalités -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-xl font-bold mb-4">
+                    <i class="fas fa-star mr-2 text-yellow-500"></i>
+                    Score Fonctionnalités (sur 100)
+                </h3>
+                <canvas id="featuresChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Temps Déploiement -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h3 class="text-xl font-bold mb-4">
+                <i class="fas fa-clock mr-2 text-[#00A5A8]"></i>
+                Temps de Déploiement Comparatif
+            </h3>
+            <canvas id="deploymentChart"></canvas>
+        </div>
+
+        <!-- Avantages Compétitifs NeoImpact -->
+        <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg shadow-lg p-8 mb-8">
+            <h2 class="text-3xl font-bold mb-6 text-gray-800">
+                <i class="fas fa-trophy text-yellow-500 mr-3"></i>
+                Avantages Compétitifs NeoImpact V2.0
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <div class="flex items-start">
+                        <i class="fas fa-dollar-sign text-[#00A5A8] text-3xl mr-4"></i>
+                        <div>
+                            <h4 class="font-bold text-lg mb-2">Prix Imbattable</h4>
+                            <p class="text-gray-600">60-85% moins cher que les leaders mondiaux, sans compromis sur les fonctionnalités.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <div class="flex items-start">
+                        <i class="fas fa-rocket text-[#00A5A8] text-3xl mr-4"></i>
+                        <div>
+                            <h4 class="font-bold text-lg mb-2">Déploiement Éclair</h4>
+                            <p class="text-gray-600">2-4 semaines vs 3-12 mois, revenus immédiats et ROI accéléré.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <div class="flex items-start">
+                        <i class="fas fa-cog text-purple-600 text-3xl mr-4"></i>
+                        <div>
+                            <h4 class="font-bold text-lg mb-2">Personnalisation Totale</h4>
+                            <p class="text-gray-600">Code source ouvert, adaptable à 100% à vos besoins spécifiques.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <div class="flex items-start">
+                        <i class="fas fa-bolt text-orange-600 text-3xl mr-4"></i>
+                        <div>
+                            <h4 class="font-bold text-lg mb-2">Performance Edge</h4>
+                            <p class="text-gray-600">40% plus rapide grâce à Cloudflare Workers, latence <200ms partout.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <div class="flex items-start">
+                        <i class="fas fa-shield-alt text-red-600 text-3xl mr-4"></i>
+                        <div>
+                            <h4 class="font-bold text-lg mb-2">Souveraineté Données</h4>
+                            <p class="text-gray-600">Contrôle total des données, conformité locale garantie, pas de dépendance éditeur.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <div class="flex items-start">
+                        <i class="fas fa-sync-alt text-teal-600 text-3xl mr-4"></i>
+                        <div>
+                            <h4 class="font-bold text-lg mb-2">Évolution Continue</h4>
+                            <p class="text-gray-600">CI/CD automatique, nouvelles fonctionnalités chaque semaine vs releases trimestrielles.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROI Détaillé -->
+        <div class="bg-white rounded-lg shadow-lg p-8">
+            <h2 class="text-3xl font-bold mb-6 text-gray-800">
+                <i class="fas fa-chart-line mr-3 text-[#00A5A8]"></i>
+                Retour sur Investissement (ROI)
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-6 border-2 border-green-300">
+                    <div class="text-green-700 text-2xl font-bold mb-2">Investissement</div>
+                    <div class="text-4xl font-bold text-green-900 mb-2">$13k-27k</div>
+                    <div class="text-[#00A5A8] text-sm">Sur 18 mois</div>
+                </div>
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg p-6 border-2 border-blue-300">
+                    <div class="text-blue-700 text-2xl font-bold mb-2">Valeur Créée</div>
+                    <div class="text-4xl font-bold text-blue-900 mb-2">$599k</div>
+                    <div class="text-[#00A5A8] text-sm">Annuelle estimée</div>
+                </div>
+                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-6 border-2 border-purple-300">
+                    <div class="text-purple-700 text-2xl font-bold mb-2">ROI Multiple</div>
+                    <div class="text-4xl font-bold text-purple-900 mb-2">23x</div>
+                    <div class="text-purple-600 text-sm">En 12 mois</div>
+                </div>
+            </div>
+            
+            <div class="mt-8">
+                <h3 class="text-xl font-bold mb-4">Détail Gains Annuels</h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded">
+                        <span class="font-semibold">💰 Économies licensing (vs Salesforce)</span>
+                        <span class="text-[#00A5A8] font-bold">$54,000</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded">
+                        <span class="font-semibold">⚡ Gains productivité (+60%)</span>
+                        <span class="text-[#00A5A8] font-bold">$120,000</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded">
+                        <span class="font-semibold">📈 Augmentation CA (+25%/partenaire)</span>
+                        <span class="text-[#00A5A8] font-bold">$300,000</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded">
+                        <span class="font-semibold">🔒 Réduction attrition (-10%)</span>
+                        <span class="text-[#00A5A8] font-bold">$80,000</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-gray-50 rounded">
+                        <span class="font-semibold">⚙️ Économies opérationnelles (-40%)</span>
+                        <span class="text-[#00A5A8] font-bold">$45,000</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-gradient-to-r from-green-100 to-green-200 rounded font-bold text-lg">
+                        <span>🏆 TOTAL VALEUR CRÉÉE</span>
+                        <span class="text-green-700">$599,000</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-12 text-center text-gray-600">
+            <p class="text-sm">
+                <i class="fas fa-info-circle mr-2"></i>
+                Document préparé le 14 février 2026 - Version 1.0 - Analyse basée sur données publiques et benchmarks marché
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Graphique Coûts
+        const costCtx = document.getElementById('costChart').getContext('2d');
+        new Chart(costCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Salesforce', 'Dynamics 365', 'MotorK', 'VinSolutions', 'NeoImpact V2.0'],
+                datasets: [{
+                    label: 'Coût Total 18 mois ($)',
+                    data: [279500, 162500, 105500, 163000, 20000],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(34, 197, 94, 0.9)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(34, 197, 94, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '$' + value.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Graphique Fonctionnalités
+        const featuresCtx = document.getElementById('featuresChart').getContext('2d');
+        new Chart(featuresCtx, {
+            type: 'radar',
+            data: {
+                labels: ['IA/ML', 'Gamification', 'Mobile', 'Analytics', 'GPS', 'Comm.'],
+                datasets: [
+                    {
+                        label: 'Salesforce',
+                        data: [95, 85, 90, 95, 90, 85],
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'NeoImpact V2.0',
+                        data: [90, 95, 95, 90, 95, 90],
+                        borderColor: 'rgba(34, 197, 94, 1)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+
+        // Graphique Déploiement
+        const deploymentCtx = document.getElementById('deploymentChart').getContext('2d');
+        new Chart(deploymentCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Salesforce', 'Dynamics 365', 'MotorK', 'VinSolutions', 'NeoImpact V2.0'],
+                datasets: [{
+                    label: 'Temps déploiement (semaines)',
+                    data: [26, 20, 12, 18, 3],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)',
+                        'rgba(54, 162, 235, 0.7)',
+                        'rgba(255, 206, 86, 0.7)',
+                        'rgba(75, 192, 192, 0.7)',
+                        'rgba(34, 197, 94, 0.9)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(34, 197, 94, 1)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                indexAxis: 'y',
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + ' sem';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - NeoImpact</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
+</head>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+<!-- Logo NeoImpact -->
+                <div class="neoimpact-logo" style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
+                    <div class="logo-icon">
+                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                        </svg>
+                    </div>
+                    <div class="logo-text" style="line-height: 1.2;">
+                        <div class="logo-arabic" style="font-size: 14px; font-weight: 600; color: #00A5A8;">وفاسلف</div>
+                        <div class="logo-latin" style="font-size: 10px; color: #6B6B6B; letter-spacing: 1px;">NeoImpact</div>
+                    </div>
+                </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-4">
+          <div class="text-2xl">🎯</div>
+          <div>
+            <h1 class="text-xl font-bold text-gray-900">NeoImpact Animation</h1>
+            <p class="text-xs text-gray-500">Pilotage Terrain</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4">
+          <div class="text-right hidden md:block">
+            <div class="text-sm font-semibold text-gray-900" id="user-name">Chargement...</div>
+            <div class="text-xs text-gray-500" id="user-role"></div>
+          </div>
+          <button onclick="logout()" class="text-gray-600 hover:text-red-600 transition">
+            <i class="fas fa-sign-out-alt text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+      <h2 class="text-3xl font-bold text-gray-900 mb-2">Tableau de bord</h2>
+      <p class="text-gray-600">Vue d'ensemble de votre activité</p>
+    </div>
+
+    <!-- KPIs Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="text-3xl">📍</div>
+          <div class="text-2xl font-bold text-[#00A5A8]">150</div>
+        </div>
+        <h3 class="text-sm font-semibold text-gray-600">Visites planifiées</h3>
+        <p class="text-xs text-gray-500 mt-1">Ce mois</p>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="text-3xl">✅</div>
+          <div class="text-2xl font-bold text-[#00A5A8]">120</div>
+        </div>
+        <h3 class="text-sm font-semibold text-gray-600">Visites réalisées</h3>
+        <p class="text-xs text-gray-500 mt-1">80% completion</p>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="text-3xl">📋</div>
+          <div class="text-2xl font-bold text-purple-600">110</div>
+        </div>
+        <h3 class="text-sm font-semibold text-gray-600">CRV soumis</h3>
+        <p class="text-xs text-gray-500 mt-1">10 en attente</p>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="text-3xl">🎯</div>
+          <div class="text-2xl font-bold text-orange-600">45</div>
+        </div>
+        <h3 class="text-sm font-semibold text-gray-600">Actions ouvertes</h3>
+        <p class="text-xs text-gray-500 mt-1">180 complétées</p>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <h3 class="text-lg font-bold text-gray-900 mb-4">Actions rapides</h3>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="/visits" class="flex flex-col items-center p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition">
+          <i class="fas fa-calendar-alt text-3xl text-[#00A5A8] mb-2"></i>
+          <span class="text-sm font-semibold text-gray-700">Planifier visite</span>
+        </a>
+        <a href="/crv" class="flex flex-col items-center p-4 border-2 border-gray-200 rounded-lg hover:border-purple-500 hover:bg-purple-50 transition">
+          <i class="fas fa-clipboard-check text-3xl text-purple-600 mb-2"></i>
+          <span class="text-sm font-semibold text-gray-700">Remplir CRV</span>
+        </a>
+        <a href="/actions" class="flex flex-col items-center p-4 border-2 border-gray-200 rounded-lg hover:border-orange-500 hover:bg-orange-50 transition">
+          <i class="fas fa-tasks text-3xl text-orange-600 mb-2"></i>
+          <span class="text-sm font-semibold text-gray-700">Mes actions</span>
+        </a>
+        <a href="/reports" class="flex flex-col items-center p-4 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:bg-green-50 transition">
+          <i class="fas fa-chart-bar text-3xl text-[#00A5A8] mb-2"></i>
+          <span class="text-sm font-semibold text-gray-700">Rapports</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Navigation Menu -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h3 class="text-lg font-bold text-gray-900 mb-4">Navigation</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <a href="/static/organisations.html" class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-blue-50 transition">
+          <i class="fas fa-sitemap text-[#00A5A8] text-xl"></i>
+          <div>
+            <div class="font-semibold text-gray-900">Organisations</div>
+            <div class="text-xs text-gray-500">Gérer les structures</div>
+          </div>
+        </a>
+        <a href="/static/territories.html" class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-purple-50 transition">
+          <i class="fas fa-map-marked-alt text-purple-600 text-xl"></i>
+          <div>
+            <div class="font-semibold text-gray-900">Territoires</div>
+            <div class="text-xs text-gray-500">Gérer les zones</div>
+          </div>
+        </a>
+        <a href="/api/v1/brands" class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-green-50 transition">
+          <i class="fas fa-tag text-[#00A5A8] text-xl"></i>
+          <div>
+            <div class="font-semibold text-gray-900">Marques</div>
+            <div class="text-xs text-gray-500">Gérer les marques</div>
+          </div>
+        </a>
+        <a href="/api/v1/banners" class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-orange-50 transition">
+          <i class="fas fa-store text-orange-600 text-xl"></i>
+          <div>
+            <div class="font-semibold text-gray-900">Enseignes</div>
+            <div class="text-xs text-gray-500">Gérer les enseignes</div>
+          </div>
+        </a>
+        <a href="/api/v1/stores" class="flex items-center gap-3 p-4 bg-gray-50 rounded-lg hover:bg-green-50 transition">
+          <i class="fas fa-map-marker-alt text-[#00A5A8] text-xl"></i>
+          <div>
+            <div class="font-semibold text-gray-900">Points de vente</div>
+            <div class="text-xs text-gray-500">Gérer les PDV</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Charger les infos utilisateur
+    async function loadUser() {
+      try {
+        const response = await fetch('/api/v1/auth/me');
+        const result = await response.json();
+        
+        if (result.success) {
+          const user = result.data.user;
+          document.getElementById('user-name').textContent = user.full_name;
+          document.getElementById('user-role').textContent = getRoleLabel(user.role);
+        } else {
+          window.location.href = '/login';
+        }
+      } catch (error) {
+        console.error('Erreur chargement utilisateur:', error);
+        window.location.href = '/login';
+      }
+    }
+    
+    function getRoleLabel(role) {
+      const labels = {
+        'admin': '🔑 Administrateur',
+        'manager': '👔 Manager',
+        'supervisor': '👨‍💼 Superviseur',
+        'agent': '👤 Agent'
+      };
+      return labels[role] || role;
+    }
+    
+    async function logout() {
+      try {
+        await fetch('/api/v1/auth/logout', { method: 'POST' });
+        window.location.href = '/login';
+      } catch (error) {
+        window.location.href = '/login';
+      }
+    }
+    
+    loadUser();
+  </script>
+</body>
+</html>
