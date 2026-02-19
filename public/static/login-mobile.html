@@ -64,6 +64,14 @@
             gap: 16px;
             cursor: pointer;
             transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .profile-card:hover {
+            border-color: #00BCD4;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,188,212,0.2);
         }
 
         .profile-card.selected {
@@ -127,25 +135,6 @@
         .check-icon i {
             display: none;
         }
-
-        .btn-continue {
-            width: 100%;
-            padding: 16px;
-            background: #FFD600;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #1a1a1a;
-            cursor: pointer;
-            opacity: 0.4;
-            pointer-events: none;
-        }
-
-        .btn-continue.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
     </style>
 </head>
 <body>
@@ -157,7 +146,8 @@
         </div>
 
         <div class="profiles">
-            <div class="profile-card" data-profile="animateur" onclick="selectProfile(this)">
+            <!-- Animateur -->
+            <a href="/static/dashboard-mobile" class="profile-card" data-profile="animateur">
                 <div class="icon-circle">
                     <i class="fas fa-user-tie"></i>
                 </div>
@@ -168,9 +158,10 @@
                 <div class="check-icon">
                     <i class="fas fa-check"></i>
                 </div>
-            </div>
+            </a>
 
-            <div class="profile-card" data-profile="manager" onclick="selectProfile(this)">
+            <!-- Manager -->
+            <a href="/static/dashboard" class="profile-card" data-profile="manager">
                 <div class="icon-circle">
                     <i class="fas fa-users"></i>
                 </div>
@@ -181,9 +172,10 @@
                 <div class="check-icon">
                     <i class="fas fa-check"></i>
                 </div>
-            </div>
+            </a>
 
-            <div class="profile-card" data-profile="directeur" onclick="selectProfile(this)">
+            <!-- Directeur -->
+            <a href="/static/director-dashboard-mobile" class="profile-card" data-profile="directeur">
                 <div class="icon-circle">
                     <i class="fas fa-crown"></i>
                 </div>
@@ -194,9 +186,10 @@
                 <div class="check-icon">
                     <i class="fas fa-check"></i>
                 </div>
-            </div>
+            </a>
 
-            <div class="profile-card" data-profile="admin" onclick="selectProfile(this)">
+            <!-- Admin -->
+            <a href="/static/dashboard" class="profile-card" data-profile="admin">
                 <div class="icon-circle">
                     <i class="fas fa-cog"></i>
                 </div>
@@ -207,42 +200,19 @@
                 <div class="check-icon">
                     <i class="fas fa-check"></i>
                 </div>
-            </div>
+            </a>
         </div>
-
-        <button id="continueBtn" class="btn-continue" onclick="continueToApp()">
-            Continuer →
-        </button>
     </div>
 
     <script>
-        let selectedProfile = null;
-
-        function selectProfile(card) {
-            document.querySelectorAll('.profile-card').forEach(c => {
-                c.classList.remove('selected');
+        // Highlight selected card on click
+        document.querySelectorAll('.profile-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Store profile in sessionStorage
+                const profile = this.dataset.profile;
+                sessionStorage.setItem('userProfile', profile);
             });
-            
-            card.classList.add('selected');
-            selectedProfile = card.dataset.profile;
-            
-            document.getElementById('continueBtn').classList.add('active');
-        }
-
-        function continueToApp() {
-            if (!selectedProfile) return;
-            
-            sessionStorage.setItem('userProfile', selectedProfile);
-            
-            const dashboards = {
-                'animateur': '/static/dashboard-mobile.html',
-                'manager': '/static/dashboard.html',
-                'directeur': '/static/director-dashboard-mobile.html',
-                'admin': '/static/dashboard.html'
-            };
-            
-            window.location.href = dashboards[selectedProfile];
-        }
+        });
     </script>
 </body>
 </html>

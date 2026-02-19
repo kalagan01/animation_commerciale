@@ -67,6 +67,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             background: white;
+            position: relative;
         }
 
         .profile-card:hover {
@@ -110,6 +111,9 @@
         }
 
         .check-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
             width: 28px;
             height: 28px;
             background: #00BCD4;
@@ -117,7 +121,6 @@
             display: none;
             align-items: center;
             justify-content: center;
-            margin: 12px auto 0;
         }
 
         .profile-card.selected .check-badge {
@@ -126,7 +129,7 @@
 
         .check-badge i {
             color: white;
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .btn-continue {
@@ -140,19 +143,16 @@
             color: #1a1a1a;
             cursor: pointer;
             transition: all 0.3s;
-            opacity: 0.4;
-            pointer-events: none;
         }
 
-        .btn-continue.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .btn-continue.active:hover {
+        .btn-continue:hover {
             background: #FFC700;
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(255,214,0,0.4);
+        }
+
+        .btn-continue:active {
+            transform: translateY(0);
         }
 
         @media (max-width: 768px) {
@@ -162,6 +162,10 @@
             
             .container {
                 padding: 24px;
+            }
+            
+            h1 {
+                font-size: 24px;
             }
         }
     </style>
@@ -175,84 +179,73 @@
         </div>
 
         <div class="profiles">
-            <div class="profile-card" data-profile="animateur" onclick="selectProfile(this)">
+            <!-- Animateur -->
+            <a href="/static/dashboard-mobile" class="profile-card" data-profile="animateur">
+                <div class="check-badge">
+                    <i class="fas fa-check"></i>
+                </div>
                 <div class="icon-circle">
                     <i class="fas fa-user-tie"></i>
                 </div>
                 <div class="profile-name">Animateur</div>
                 <div class="profile-desc">Terrain & Visites</div>
+            </a>
+
+            <!-- Manager -->
+            <a href="/static/dashboard" class="profile-card" data-profile="manager">
                 <div class="check-badge">
                     <i class="fas fa-check"></i>
                 </div>
-            </div>
-
-            <div class="profile-card" data-profile="manager" onclick="selectProfile(this)">
                 <div class="icon-circle">
                     <i class="fas fa-users"></i>
                 </div>
                 <div class="profile-name">Manager</div>
                 <div class="profile-desc">Équipe & KPIs</div>
+            </a>
+
+            <!-- Directeur -->
+            <a href="/static/director-dashboard-mobile" class="profile-card" data-profile="directeur">
                 <div class="check-badge">
                     <i class="fas fa-check"></i>
                 </div>
-            </div>
-
-            <div class="profile-card" data-profile="directeur" onclick="selectProfile(this)">
                 <div class="icon-circle">
                     <i class="fas fa-crown"></i>
                 </div>
                 <div class="profile-name">Directeur</div>
                 <div class="profile-desc">Direction & Stratégie</div>
+            </a>
+
+            <!-- Admin -->
+            <a href="/static/dashboard" class="profile-card" data-profile="admin">
                 <div class="check-badge">
                     <i class="fas fa-check"></i>
                 </div>
-            </div>
-
-            <div class="profile-card" data-profile="admin" onclick="selectProfile(this)">
                 <div class="icon-circle">
                     <i class="fas fa-cog"></i>
                 </div>
                 <div class="profile-name">Administrateur</div>
                 <div class="profile-desc">Configuration</div>
-                <div class="check-badge">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
+            </a>
         </div>
-
-        <button id="continueBtn" class="btn-continue" onclick="continueToApp()">
-            Continuer →
-        </button>
     </div>
 
     <script>
-        let selectedProfile = null;
-
-        function selectProfile(card) {
-            document.querySelectorAll('.profile-card').forEach(c => {
-                c.classList.remove('selected');
+        // Highlight selected card on click
+        document.querySelectorAll('.profile-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                // Remove previous selections
+                document.querySelectorAll('.profile-card').forEach(c => {
+                    c.classList.remove('selected');
+                });
+                
+                // Add selection to current card
+                this.classList.add('selected');
+                
+                // Store profile in sessionStorage
+                const profile = this.dataset.profile;
+                sessionStorage.setItem('userProfile', profile);
             });
-            
-            card.classList.add('selected');
-            selectedProfile = card.dataset.profile;
-            
-            document.getElementById('continueBtn').classList.add('active');
-        }
-
-        function continueToApp() {
-            if (!selectedProfile) return;
-            
-            sessionStorage.setItem('userProfile', selectedProfile);
-            
-            const dashboards = {
-                'animateur': '/static/dashboard-mobile.html',
-                'manager': '/static/dashboard.html',
-                'directeur': '/static/director-dashboard-mobile.html',
-                'admin': '/static/dashboard.html'
-            };
-            
-            window.location.href = dashboards[selectedProfile];
-        }
+        });
     </script>
 </body>
 </html>
