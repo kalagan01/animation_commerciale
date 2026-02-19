@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - NeoImpact Animation Commerciale</title>
+    <title>Sélection du Profil - NeoImpact Animation Commerciale</title>
     <link href="/css/neoimpact-design-system.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -122,7 +122,7 @@
             margin: 0;
         }
 
-        /* Right Side - Login Form */
+        /* Right Side - Profile Selection */
         .login-form-side {
             flex: 1;
             display: flex;
@@ -132,100 +132,115 @@
             background: white;
         }
 
-        .login-form-container {
+        .profile-selection-container {
             width: 100%;
-            max-width: 480px;
+            max-width: 600px;
         }
 
-        .login-form-header {
+        .profile-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 48px;
         }
 
-        .login-form-header h1 {
+        .profile-header h1 {
             font-size: 32px;
+            font-weight: bold;
+            color: var(--color-dark);
+            margin: 0 0 12px;
+        }
+
+        .profile-header p {
+            font-size: 18px;
+            color: var(--color-text-secondary);
+            margin: 0;
+        }
+
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .profile-card {
+            background: white;
+            border: 2px solid var(--color-border);
+            border-radius: 16px;
+            padding: 32px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+        }
+
+        .profile-card:hover {
+            border-color: var(--color-primary);
+            box-shadow: 0 8px 24px rgba(0, 188, 212, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .profile-card.selected {
+            border-color: var(--color-primary);
+            background: rgba(0, 188, 212, 0.05);
+            box-shadow: 0 8px 24px rgba(0, 188, 212, 0.2);
+        }
+
+        .profile-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+        }
+
+        .profile-card.selected .profile-icon {
+            animation: bounce 0.5s ease;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .profile-title {
+            font-size: 20px;
             font-weight: bold;
             color: var(--color-dark);
             margin: 0 0 8px;
         }
 
-        .login-form-header p {
-            font-size: 16px;
+        .profile-subtitle {
+            font-size: 14px;
             color: var(--color-text-secondary);
             margin: 0;
         }
 
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--color-text-primary);
-            margin-bottom: 8px;
-        }
-
-        .form-input-wrapper {
-            position: relative;
-        }
-
-        .form-input-wrapper i {
+        .profile-badge {
             position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--color-text-secondary);
-            font-size: 18px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 16px 18px 16px 52px;
-            border: 1.5px solid var(--color-border);
-            border-radius: 12px;
-            font-size: 16px;
-            transition: all 0.2s ease;
-            background: white;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 4px rgba(0, 188, 212, 0.1);
-        }
-
-        .password-toggle {
-            position: absolute;
-            right: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--color-text-secondary);
-            cursor: pointer;
-            font-size: 18px;
-            padding: 4px;
-        }
-
-        .forgot-password {
-            text-align: right;
-            margin-bottom: 32px;
-        }
-
-        .forgot-password a {
-            color: var(--color-primary);
-            text-decoration: none;
+            top: 12px;
+            right: 12px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            color: white;
+            display: none;
+            align-items: center;
+            justify-content: center;
             font-size: 14px;
-            font-weight: 500;
         }
 
-        .forgot-password a:hover {
-            text-decoration: underline;
+        .profile-card.selected .profile-badge {
+            display: flex;
         }
 
-        .btn-login {
+        .btn-continue {
             width: 100%;
             padding: 18px;
             background-color: var(--color-secondary);
@@ -237,39 +252,19 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 12px rgba(255, 214, 0, 0.3);
+            opacity: 0.5;
+            pointer-events: none;
         }
 
-        .btn-login:hover {
+        .btn-continue.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .btn-continue.active:hover {
             background-color: var(--color-secondary-dark);
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(255, 214, 0, 0.4);
-        }
-
-        .btn-login:active {
-            transform: translateY(0);
-        }
-
-        .form-footer {
-            margin-top: 32px;
-            text-align: center;
-            padding-top: 24px;
-            border-top: 1px solid var(--color-border-light);
-        }
-
-        .form-footer p {
-            color: var(--color-text-secondary);
-            font-size: 14px;
-            margin: 0 0 16px;
-        }
-
-        .form-footer a {
-            color: var(--color-primary);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .form-footer a:hover {
-            text-decoration: underline;
         }
 
         .page-footer {
@@ -281,12 +276,12 @@
         }
 
         /* Loading state */
-        .btn-login.loading {
+        .btn-continue.loading {
             position: relative;
             color: transparent;
         }
 
-        .btn-login.loading::after {
+        .btn-continue.loading::after {
             content: '';
             position: absolute;
             width: 24px;
@@ -321,12 +316,15 @@
                 padding: 24px;
             }
 
-            .login-form-header h1 {
+            .profile-header h1 {
                 font-size: 24px;
+            }
+
+            .profiles-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
-    <link rel="stylesheet" href="/static/css/neoimpact-ui.css">
 </head>
 <body>
     <div class="login-wrapper">
@@ -348,80 +346,82 @@
             </div>
         </div>
 
-        <!-- Right Side - Login Form -->
+        <!-- Right Side - Profile Selection -->
         <div class="login-form-side">
-            <div class="login-form-container">
-                <div class="login-form-header">
+            <div class="profile-selection-container">
+                <div class="profile-header">
                     <!-- Logo NeoImpact -->
-                <div class="neoimpact-logo" style="display: flex; align-items: center; gap: 12px; margin-right: 20px;">
-                    <div class="logo-icon">
-                        <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
-                            <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
-                            <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
-                            <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
-                        </svg>
-                    </div>
-                    <div class="logo-text" style="line-height: 1.2;">
-                        <div class="logo-arabic" style="font-size: 14px; font-weight: 600; color: #00A5A8;">وفاسلف</div>
-                        <div class="logo-latin" style="font-size: 10px; color: #6B6B6B; letter-spacing: 1px;">NeoImpact</div>
-                    </div>
-                </div>
-<h1>Connexion</h1>
-                    <p>Bienvenue sur votre espace</p>
-                </div>
-
-                <form id="loginForm">
-                    <!-- Email Input -->
-                    <div class="form-group">
-                        <label class="form-label">Adresse e-mail</label>
-                        <div class="form-input-wrapper">
-                            <i class="fas fa-envelope"></i>
-                            <input 
-                                type="email" 
-                                class="form-input" 
-                                placeholder="Adresse e-mail"
-                                id="email"
-                                required
-                                autocomplete="email"
-                            >
+                    <div class="neoimpact-logo" style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 24px;">
+                        <div class="logo-icon">
+                            <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                                <path d="M24 4L4 14v20l20 10 20-10V14L24 4z" fill="#FFD600"/>
+                                <path d="M24 14l-12 6v12l12 6 12-6V20l-12-6z" fill="#00A5A8"/>
+                                <path d="M24 20v16l8-4V16l-8 4z" fill="#FFFFFF" opacity="0.5"/>
+                            </svg>
+                        </div>
+                        <div class="logo-text" style="line-height: 1.2;">
+                            <div class="logo-arabic" style="font-size: 14px; font-weight: 600; color: #00A5A8;">وفاسلف</div>
+                            <div class="logo-latin" style="font-size: 10px; color: #6B6B6B; letter-spacing: 1px;">NeoImpact</div>
                         </div>
                     </div>
+                    <h1>Choisissez votre profil</h1>
+                    <p>Sélectionnez le rôle correspondant à votre fonction</p>
+                </div>
 
-                    <!-- Password Input -->
-                    <div class="form-group">
-                        <label class="form-label">Mot de passe</label>
-                        <div class="form-input-wrapper">
-                            <i class="fas fa-lock"></i>
-                            <input 
-                                type="password" 
-                                class="form-input" 
-                                placeholder="Mot de passe"
-                                id="password"
-                                required
-                                autocomplete="current-password"
-                            >
-                            <button type="button" class="password-toggle" onclick="togglePassword()">
-                                <i class="fas fa-eye-slash" id="passwordIcon"></i>
-                            </button>
+                <div class="profiles-grid">
+                    <!-- Animateur Profile -->
+                    <div class="profile-card" data-profile="animateur" onclick="selectProfile(this)">
+                        <div class="profile-badge">
+                            <i class="fas fa-check"></i>
                         </div>
+                        <div class="profile-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <h3 class="profile-title">Animateur</h3>
+                        <p class="profile-subtitle">Terrain & Visites</p>
                     </div>
 
-                    <!-- Forgot Password -->
-                    <div class="forgot-password">
-                        <a href="/forgot-password">Mot de passe oublié?</a>
+                    <!-- Manager Profile -->
+                    <div class="profile-card" data-profile="manager" onclick="selectProfile(this)">
+                        <div class="profile-badge">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="profile-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="profile-title">Manager</h3>
+                        <p class="profile-subtitle">Équipe & KPIs</p>
                     </div>
 
-                    <!-- Login Button -->
-                    <button type="submit" class="btn-login">
-                        Se connecter
-                    </button>
-
-                    <!-- Footer -->
-                    <div class="form-footer">
-                        <p>Première connexion?</p>
-                        <a href="/register">Créer un compte</a>
+                    <!-- Directeur Profile -->
+                    <div class="profile-card" data-profile="directeur" onclick="selectProfile(this)">
+                        <div class="profile-badge">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="profile-icon">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <h3 class="profile-title">Directeur</h3>
+                        <p class="profile-subtitle">Direction & Stratégie</p>
                     </div>
-                </form>
+
+                    <!-- Administrateur Profile -->
+                    <div class="profile-card" data-profile="admin" onclick="selectProfile(this)">
+                        <div class="profile-badge">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="profile-icon">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <h3 class="profile-title">Administrateur</h3>
+                        <p class="profile-subtitle">Configuration & Admin</p>
+                    </div>
+                </div>
+
+                <button id="continueBtn" class="btn-continue" onclick="continueToApp()">
+                    <i class="fas fa-arrow-right" style="margin-right: 8px;"></i>
+                    Continuer
+                </button>
             </div>
 
             <div class="page-footer">
@@ -432,66 +432,58 @@
     </div>
 
     <script>
-        // Toggle Password Visibility
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const passwordIcon = document.getElementById('passwordIcon');
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                passwordIcon.classList.remove('fa-eye-slash');
-                passwordIcon.classList.add('fa-eye');
-            } else {
-                passwordInput.type = 'password';
-                passwordIcon.classList.remove('fa-eye');
-                passwordIcon.classList.add('fa-eye-slash');
-            }
+        let selectedProfile = null;
+
+        // Select Profile
+        function selectProfile(card) {
+            // Remove previous selection
+            document.querySelectorAll('.profile-card').forEach(c => {
+                c.classList.remove('selected');
+            });
+
+            // Add selection to current card
+            card.classList.add('selected');
+            selectedProfile = card.dataset.profile;
+
+            // Enable continue button
+            const btn = document.getElementById('continueBtn');
+            btn.classList.add('active');
         }
 
-        // Handle Login Form Submit
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const btn = e.target.querySelector('.btn-login');
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+        // Continue to App
+        function continueToApp() {
+            if (!selectedProfile) return;
 
-            // Add loading state
+            const btn = document.getElementById('continueBtn');
             btn.classList.add('loading');
             btn.disabled = true;
 
-            try {
-                const response = await fetch('/api/v1/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ email, password }),
-                    credentials: 'include'
-                });
+            // Store selected profile in sessionStorage
+            sessionStorage.setItem('userProfile', selectedProfile);
 
-                const data = await response.json();
+            // Determine dashboard URL based on profile
+            const dashboardUrls = {
+                'animateur': '/static/dashboard-mobile.html',
+                'manager': '/static/dashboard.html',
+                'directeur': '/static/director-dashboard-mobile.html',
+                'admin': '/static/dashboard.html'
+            };
 
-                if (data.success) {
-                    // Redirect to dashboard
-                    window.location.href = '/static/dashboard.html';
-                } else {
-                    alert('Email ou mot de passe incorrect');
-                    btn.classList.remove('loading');
-                    btn.disabled = false;
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                alert('Erreur de connexion. Veuillez réessayer.');
-                btn.classList.remove('loading');
-                btn.disabled = false;
-            }
-        });
+            // Redirect to appropriate dashboard
+            setTimeout(() => {
+                window.location.href = dashboardUrls[selectedProfile] || '/static/dashboard.html';
+            }, 800);
+        }
 
-        // Auto-fill demo credentials for development
+        // Auto-select for development
         if (window.location.hostname === 'localhost' || window.location.hostname.includes('sandbox')) {
-            document.getElementById('email').value = 'admin@neoimpact.ma';
-            document.getElementById('password').value = 'demo123';
+            // Auto-select animateur profile for quick testing
+            setTimeout(() => {
+                const animateurCard = document.querySelector('[data-profile="animateur"]');
+                if (animateurCard) {
+                    selectProfile(animateurCard);
+                }
+            }, 500);
         }
     </script>
 </body>
