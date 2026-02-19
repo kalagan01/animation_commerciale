@@ -121,25 +121,9 @@ app.get('/components', (c) => {
   return c.html(ComponentsDemo())
 })
 
-// Route login (placeholder)
+// Route login - Redirect to HTML login page
 app.get('/login', (c) => {
-  return c.render(
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center mb-6">Connexion</h2>
-        <p className="text-center text-gray-600 mb-6">
-          Authentification SSO Supabase<br/>
-          (En cours de configuration)
-        </p>
-        <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
-          Se connecter avec SSO
-        </button>
-        <p className="text-center text-sm text-gray-500 mt-4">
-          <a href="/" className="text-blue-600 hover:underline">← Retour à l'accueil</a>
-        </p>
-      </div>
-    </div>
-  )
+  return c.redirect('/static/login-desktop.html')
 })
 
 // Route login.html - Serve complete HTML login page
